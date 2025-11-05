@@ -2302,18 +2302,28 @@
             observer.observe(el);
         });
 
+        // Hide loading overlay immediately when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            }, 300);
+        });
+
         // Count up hero stats on load
         window.addEventListener('load', () => {
             document.querySelectorAll('.hero .count-up').forEach(countUp => {
                 const target = parseInt(countUp.getAttribute('data-target'));
                 animateCount(countUp, target);
             });
-
-            // Hide loading overlay
-            setTimeout(() => {
-                document.getElementById('loadingOverlay').classList.add('hidden');
-            }, 500);
         });
+
+        // Fallback: force hide loading screen after 1 second
+        setTimeout(() => {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay && !overlay.classList.contains('hidden')) {
+                overlay.classList.add('hidden');
+            }
+        }, 1000);
 
         // 3D Card Tilt Effect
         document.querySelectorAll('.card, .arch-card').forEach(card => {
