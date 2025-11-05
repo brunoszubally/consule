@@ -1402,6 +1402,122 @@
                 display: block;
             }
         }
+
+        /* Live Demo Styles */
+        .demo-container {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 24px;
+            padding: 60px 40px;
+            margin: 80px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-canvas-wrapper {
+            position: relative;
+            width: 100%;
+            height: 700px;
+            margin: 40px 0;
+        }
+
+        #demoCanvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 16px;
+            background: rgba(10, 15, 30, 0.8);
+        }
+
+        .demo-controls {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 32px;
+            flex-wrap: wrap;
+        }
+
+        .demo-btn {
+            padding: 14px 32px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        .demo-btn:disabled {
+            background: var(--gray-700);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .demo-btn.secondary {
+            background: var(--gray-700);
+        }
+
+        .demo-btn.secondary:hover:not(:disabled) {
+            background: var(--gray-600);
+        }
+
+        .demo-status {
+            text-align: center;
+            margin-top: 24px;
+            padding: 16px;
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .demo-status-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .demo-legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 32px;
+            padding: 24px;
+            background: rgba(30, 41, 59, 0.4);
+            border-radius: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .legend-dot.idle { background: var(--gray-600); }
+        .legend-dot.thinking { background: var(--warning); }
+        .legend-dot.responding { background: var(--primary); }
+        .legend-dot.voting { background: var(--accent); }
+        .legend-dot.complete { background: var(--success); }
+
+        .legend-label {
+            font-size: 13px;
+            color: var(--gray-400);
+        }
     </style>
 </head>
 <body>
@@ -1436,6 +1552,7 @@
                 <button class="mobile-menu-toggle">☰</button>
                 <ul>
                     <li><a href="#overview">Overview</a></li>
+                    <li><a href="#demo">Live Demo</a></li>
                     <li><a href="#technology">Technology</a></li>
                     <li><a href="#architectures">Architectures</a></li>
                     <li><a href="#implementation">Implementation</a></li>
@@ -1519,6 +1636,77 @@
                     feladatokban. A konszenzus-alapú megközelítés különösen akkor eredményes, amikor
                     kezdeti véleménykülönbségek vannak, mivel a deliberáció lehetőséget ad a
                     self-correction-re és a perspektívák integrálására.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Demo -->
+    <section id="demo">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-label">Interactive Visualization</div>
+                <h2 class="section-title">Élő Tech Demo</h2>
+                <p class="section-description">
+                    Nézd meg valós időben, ahogy a 12 AI ágens együttműködik, vitázik és szavaz!
+                    Kattints a gombra a szimuláció indításához.
+                </p>
+            </div>
+
+            <div class="demo-container fade-in">
+                <div class="demo-canvas-wrapper">
+                    <canvas id="demoCanvas"></canvas>
+                </div>
+
+                <div class="demo-controls">
+                    <button class="demo-btn" id="startDemoBtn" onclick="startDemo()">
+                        🚀 Szimuláció Indítása
+                    </button>
+                    <button class="demo-btn secondary" id="pauseDemoBtn" onclick="pauseDemo()" disabled>
+                        ⏸️ Szünet
+                    </button>
+                    <button class="demo-btn secondary" id="resetDemoBtn" onclick="resetDemo()">
+                        🔄 Újra
+                    </button>
+                </div>
+
+                <div class="demo-status">
+                    <div class="demo-status-text" id="demoStatusText">
+                        Kattints a "Szimuláció Indítása" gombra!
+                    </div>
+                </div>
+
+                <div class="demo-legend">
+                    <div class="legend-item">
+                        <div class="legend-dot idle"></div>
+                        <div class="legend-label">Várakozik</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot thinking"></div>
+                        <div class="legend-label">Gondolkodik</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot responding"></div>
+                        <div class="legend-label">Válaszol</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot voting"></div>
+                        <div class="legend-label">Szavaz</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot complete"></div>
+                        <div class="legend-label">Kész</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box fade-in">
+                <h3>Mi történik a háttérben?</h3>
+                <p>
+                    1. <strong>Parallel Generation:</strong> Mind a 12 ágens egyszerre dolgozik a kérdésen<br>
+                    2. <strong>Cross-Evaluation:</strong> Minden ágens értékeli a többi 11 válaszát<br>
+                    3. <strong>Weighted Voting:</strong> Súlyozott szavazás alapján ranking készül<br>
+                    4. <strong>Result Aggregation:</strong> A top 3 válasz kerül visszaadásra indoklással
                 </p>
             </div>
         </div>
@@ -2348,6 +2536,341 @@
 
         console.log('%c🚀 AI Tanács Interactive Documentation', 'color: #3b82f6; font-size: 20px; font-weight: bold;');
         console.log('%cVerzió 1.0 | 2025.11', 'color: #06b6d4; font-size: 14px;');
+
+        // ==================== LIVE DEMO ====================
+
+        const demoCanvas = document.getElementById('demoCanvas');
+        const demoCtx = demoCanvas ? demoCanvas.getContext('2d') : null;
+
+        let demoAnimationId = null;
+        let demoRunning = false;
+        let demoPaused = false;
+        let demoAgents = [];
+        let demoConnections = [];
+        let demoPhase = 'idle'; // idle, thinking, responding, voting, complete
+        let demoStartTime = 0;
+
+        const AGENT_NAMES = [
+            { name: 'Stratéga', short: 'STR', color: '#3b82f6' },
+            { name: 'Kreatív', short: 'CRE', color: '#8b5cf6' },
+            { name: 'Praktikus', short: 'PRA', color: '#06b6d4' },
+            { name: 'Filozófus', short: 'PHI', color: '#10b981' },
+            { name: 'Technikus', short: 'TEC', color: '#f59e0b' },
+            { name: 'Szkeptikus', short: 'SKE', color: '#ef4444' },
+            { name: 'Empatikus', short: 'EMP', color: '#ec4899' },
+            { name: 'Kísérleti', short: 'KIS', color: '#6366f1' },
+            { name: 'Történész', short: 'TÖR', color: '#14b8a6' },
+            { name: 'Gyakorlati', short: 'GYO', color: '#f97316' },
+            { name: 'Részlet', short: 'RÉS', color: '#a855f7' },
+            { name: 'Humanista', short: 'HUM', color: '#22c55e' }
+        ];
+
+        function resizeDemoCanvas() {
+            if (!demoCanvas) return;
+            const rect = demoCanvas.getBoundingClientRect();
+            demoCanvas.width = rect.width * window.devicePixelRatio;
+            demoCanvas.height = rect.height * window.devicePixelRatio;
+            demoCtx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        }
+
+        function initDemo() {
+            if (!demoCanvas) return;
+            resizeDemoCanvas();
+
+            const centerX = demoCanvas.width / window.devicePixelRatio / 2;
+            const centerY = demoCanvas.height / window.devicePixelRatio / 2;
+            const radius = Math.min(centerX, centerY) * 0.6;
+
+            demoAgents = AGENT_NAMES.map((agent, i) => {
+                const angle = (i / AGENT_NAMES.length) * Math.PI * 2 - Math.PI / 2;
+                return {
+                    ...agent,
+                    x: centerX + Math.cos(angle) * radius,
+                    y: centerY + Math.sin(angle) * radius,
+                    status: 'idle', // idle, thinking, responding, voting, complete
+                    progress: 0,
+                    pulsePhase: Math.random() * Math.PI * 2
+                };
+            });
+
+            renderDemo();
+        }
+
+        function startDemo() {
+            if (demoRunning) return;
+
+            demoRunning = true;
+            demoPaused = false;
+            demoPhase = 'thinking';
+            demoStartTime = Date.now();
+
+            document.getElementById('startDemoBtn').disabled = true;
+            document.getElementById('pauseDemoBtn').disabled = false;
+            updateDemoStatus('🧠 Ágensek gondolkodnak...');
+
+            // Phase 1: Thinking (2s)
+            setTimeout(() => {
+                if (!demoRunning || demoPaused) return;
+                demoAgents.forEach(agent => agent.status = 'thinking');
+                updateDemoStatus('💭 Párhuzamos gondolkodás...');
+            }, 500);
+
+            // Phase 2: Responding (4s)
+            setTimeout(() => {
+                if (!demoRunning || demoPaused) return;
+                demoPhase = 'responding';
+                demoAgents.forEach((agent, i) => {
+                    setTimeout(() => {
+                        agent.status = 'responding';
+                        agent.progress = 0;
+                    }, i * 200);
+                });
+                updateDemoStatus('✍️ Ágensek válaszolnak...');
+            }, 2500);
+
+            // Phase 3: Cross-Evaluation (4s)
+            setTimeout(() => {
+                if (!demoRunning || demoPaused) return;
+                demoPhase = 'voting';
+                updateDemoStatus('🔄 Keresztértékelés folyamatban...');
+                startConnectionAnimation();
+            }, 6500);
+
+            // Phase 4: Voting (2s)
+            setTimeout(() => {
+                if (!demoRunning || demoPaused) return;
+                demoAgents.forEach(agent => agent.status = 'voting');
+                updateDemoStatus('🗳️ Szavazás...');
+            }, 10500);
+
+            // Phase 5: Complete (1s)
+            setTimeout(() => {
+                if (!demoRunning || demoPaused) return;
+                demoPhase = 'complete';
+                demoAgents.forEach(agent => {
+                    agent.status = 'complete';
+                    agent.progress = 100;
+                });
+                demoConnections = [];
+                updateDemoStatus('✅ Szimuláció befejezve! Top 3 válasz aggregálva.');
+                document.getElementById('startDemoBtn').disabled = false;
+                document.getElementById('pauseDemoBtn').disabled = true;
+                setTimeout(() => {
+                    if (demoRunning) {
+                        demoRunning = false;
+                    }
+                }, 2000);
+            }, 12500);
+
+            animateDemo();
+        }
+
+        function pauseDemo() {
+            demoPaused = !demoPaused;
+            const btn = document.getElementById('pauseDemoBtn');
+            btn.textContent = demoPaused ? '▶️ Folytat' : '⏸️ Szünet';
+            if (!demoPaused && demoRunning) {
+                animateDemo();
+            }
+        }
+
+        function resetDemo() {
+            demoRunning = false;
+            demoPaused = false;
+            demoPhase = 'idle';
+            demoConnections = [];
+            if (demoAnimationId) {
+                cancelAnimationFrame(demoAnimationId);
+                demoAnimationId = null;
+            }
+            demoAgents.forEach(agent => {
+                agent.status = 'idle';
+                agent.progress = 0;
+            });
+            document.getElementById('startDemoBtn').disabled = false;
+            document.getElementById('pauseDemoBtn').disabled = true;
+            document.getElementById('pauseDemoBtn').textContent = '⏸️ Szünet';
+            updateDemoStatus('Kattints a "Szimuláció Indítása" gombra!');
+            renderDemo();
+        }
+
+        function updateDemoStatus(text) {
+            const statusEl = document.getElementById('demoStatusText');
+            if (statusEl) {
+                statusEl.textContent = text;
+            }
+        }
+
+        function startConnectionAnimation() {
+            demoConnections = [];
+            const connectionInterval = setInterval(() => {
+                if (!demoRunning || demoPaused || demoPhase !== 'voting') {
+                    clearInterval(connectionInterval);
+                    return;
+                }
+
+                const from = Math.floor(Math.random() * demoAgents.length);
+                const to = Math.floor(Math.random() * demoAgents.length);
+                if (from !== to) {
+                    demoConnections.push({
+                        from,
+                        to,
+                        progress: 0,
+                        life: 1
+                    });
+                }
+
+                // Limit connections
+                if (demoConnections.length > 20) {
+                    demoConnections.shift();
+                }
+            }, 150);
+        }
+
+        function animateDemo() {
+            if (!demoRunning || demoPaused) return;
+
+            // Update agent progress
+            demoAgents.forEach(agent => {
+                if (agent.status === 'responding' && agent.progress < 100) {
+                    agent.progress += 2;
+                }
+                agent.pulsePhase += 0.05;
+            });
+
+            // Update connections
+            demoConnections = demoConnections.filter(conn => {
+                conn.progress += 0.05;
+                conn.life -= 0.01;
+                return conn.life > 0;
+            });
+
+            renderDemo();
+            demoAnimationId = requestAnimationFrame(animateDemo);
+        }
+
+        function renderDemo() {
+            if (!demoCtx || !demoCanvas) return;
+
+            const w = demoCanvas.width / window.devicePixelRatio;
+            const h = demoCanvas.height / window.devicePixelRatio;
+
+            // Clear
+            demoCtx.clearRect(0, 0, w, h);
+
+            // Draw connections
+            demoConnections.forEach(conn => {
+                const from = demoAgents[conn.from];
+                const to = demoAgents[conn.to];
+
+                const dx = to.x - from.x;
+                const dy = to.y - from.y;
+                const currentX = from.x + dx * Math.min(conn.progress, 1);
+                const currentY = from.y + dy * Math.min(conn.progress, 1);
+
+                demoCtx.strokeStyle = `rgba(6, 182, 212, ${conn.life * 0.6})`;
+                demoCtx.lineWidth = 2;
+                demoCtx.beginPath();
+                demoCtx.moveTo(from.x, from.y);
+                demoCtx.lineTo(currentX, currentY);
+                demoCtx.stroke();
+
+                // Arrow head
+                if (conn.progress >= 0.9) {
+                    const angle = Math.atan2(dy, dx);
+                    demoCtx.fillStyle = `rgba(6, 182, 212, ${conn.life})`;
+                    demoCtx.beginPath();
+                    demoCtx.moveTo(currentX, currentY);
+                    demoCtx.lineTo(
+                        currentX - 10 * Math.cos(angle - Math.PI / 6),
+                        currentY - 10 * Math.sin(angle - Math.PI / 6)
+                    );
+                    demoCtx.lineTo(
+                        currentX - 10 * Math.cos(angle + Math.PI / 6),
+                        currentY - 10 * Math.sin(angle + Math.PI / 6)
+                    );
+                    demoCtx.closePath();
+                    demoCtx.fill();
+                }
+            });
+
+            // Draw agents
+            demoAgents.forEach(agent => {
+                const statusColors = {
+                    idle: '#475569',
+                    thinking: '#f59e0b',
+                    responding: '#3b82f6',
+                    voting: '#06b6d4',
+                    complete: '#10b981'
+                };
+
+                const color = statusColors[agent.status] || statusColors.idle;
+                const pulseSize = agent.status !== 'idle' ? Math.sin(agent.pulsePhase) * 3 : 0;
+                const radius = 30 + pulseSize;
+
+                // Outer glow
+                if (agent.status !== 'idle') {
+                    const gradient = demoCtx.createRadialGradient(agent.x, agent.y, 0, agent.x, agent.y, radius + 15);
+                    gradient.addColorStop(0, color + '40');
+                    gradient.addColorStop(1, color + '00');
+                    demoCtx.fillStyle = gradient;
+                    demoCtx.beginPath();
+                    demoCtx.arc(agent.x, agent.y, radius + 15, 0, Math.PI * 2);
+                    demoCtx.fill();
+                }
+
+                // Main circle
+                demoCtx.fillStyle = color + '20';
+                demoCtx.strokeStyle = color;
+                demoCtx.lineWidth = 3;
+                demoCtx.beginPath();
+                demoCtx.arc(agent.x, agent.y, radius, 0, Math.PI * 2);
+                demoCtx.fill();
+                demoCtx.stroke();
+
+                // Progress arc
+                if (agent.progress > 0) {
+                    demoCtx.strokeStyle = '#10b981';
+                    demoCtx.lineWidth = 4;
+                    demoCtx.beginPath();
+                    demoCtx.arc(
+                        agent.x,
+                        agent.y,
+                        radius + 5,
+                        -Math.PI / 2,
+                        -Math.PI / 2 + (agent.progress / 100) * Math.PI * 2
+                    );
+                    demoCtx.stroke();
+                }
+
+                // Text
+                demoCtx.fillStyle = '#ffffff';
+                demoCtx.font = 'bold 12px Inter';
+                demoCtx.textAlign = 'center';
+                demoCtx.textBaseline = 'middle';
+                demoCtx.fillText(agent.short, agent.x, agent.y);
+
+                // Name below
+                demoCtx.fillStyle = '#94a3b8';
+                demoCtx.font = '10px Inter';
+                demoCtx.fillText(agent.name, agent.x, agent.y + radius + 15);
+            });
+        }
+
+        // Initialize demo when ready
+        if (demoCanvas) {
+            window.addEventListener('resize', () => {
+                resizeDemoCanvas();
+                renderDemo();
+            });
+
+            // Wait for fonts to load
+            document.fonts.ready.then(() => {
+                initDemo();
+            });
+        }
+
+        // ==================== END LIVE DEMO ====================
     </script>
 </body>
 </html>
