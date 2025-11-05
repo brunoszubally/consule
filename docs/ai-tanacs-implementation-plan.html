@@ -1518,6 +1518,171 @@
             font-size: 13px;
             color: var(--gray-400);
         }
+
+        .demo-questions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .question-btn {
+            padding: 16px;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            color: var(--gray-300);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .question-btn:hover {
+            border-color: var(--primary);
+            background: rgba(59, 130, 246, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .question-btn.active {
+            border-color: var(--primary);
+            background: rgba(59, 130, 246, 0.15);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .question-icon {
+            font-size: 20px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .agent-tooltip {
+            position: absolute;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            min-width: 200px;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.2s;
+            backdrop-filter: blur(10px);
+        }
+
+        .agent-tooltip.visible {
+            opacity: 1;
+        }
+
+        .tooltip-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .tooltip-bio {
+            font-size: 12px;
+            color: var(--gray-400);
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+
+        .tooltip-weight {
+            font-size: 11px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .results-panel {
+            margin-top: 40px;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 16px;
+            padding: 32px;
+            display: none;
+        }
+
+        .results-panel.visible {
+            display: block;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .result-item {
+            background: rgba(15, 23, 42, 0.6);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            margin-bottom: 16px;
+            border-radius: 8px;
+        }
+
+        .result-rank {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .result-agent {
+            font-size: 14px;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .result-text {
+            font-size: 14px;
+            color: var(--gray-300);
+            line-height: 1.6;
+        }
+
+        .result-score {
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 16px;
+            justify-content: center;
+        }
+
+        .speed-label {
+            font-size: 13px;
+            color: var(--gray-400);
+            font-weight: 600;
+        }
+
+        .speed-slider {
+            width: 150px;
+            height: 4px;
+            background: var(--gray-700);
+            border-radius: 2px;
+            appearance: none;
+            outline: none;
+        }
+
+        .speed-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .speed-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
     </style>
 </head>
 <body>
@@ -1654,8 +1819,37 @@
             </div>
 
             <div class="demo-container fade-in">
+                <h3 style="color: white; margin-bottom: 24px; font-size: 18px;">Válassz egy kérdést:</h3>
+                <div class="demo-questions">
+                    <button class="question-btn" onclick="selectQuestion(0)">
+                        <span class="question-icon">💰</span>
+                        <strong>Bitcoin vagy arany?</strong><br>
+                        Melyik a jobb hosszú távú befektetés?
+                    </button>
+                    <button class="question-btn" onclick="selectQuestion(1)">
+                        <span class="question-icon">💻</span>
+                        <strong>Minek tanuljak programozni?</strong><br>
+                        Ha az AI mindent megír helyettem?
+                    </button>
+                    <button class="question-btn" onclick="selectQuestion(2)">
+                        <span class="question-icon">🚀</span>
+                        <strong>Hogyan építsek startupot?</strong><br>
+                        Sikeres vállalkozás 2025-ben
+                    </button>
+                    <button class="question-btn" onclick="selectQuestion(3)">
+                        <span class="question-icon">🎓</span>
+                        <strong>Online vs offline tanulás?</strong><br>
+                        Mi a hatékonyabb módszer?
+                    </button>
+                </div>
+
                 <div class="demo-canvas-wrapper">
                     <canvas id="demoCanvas"></canvas>
+                    <div class="agent-tooltip" id="agentTooltip">
+                        <div class="tooltip-name" id="tooltipName"></div>
+                        <div class="tooltip-bio" id="tooltipBio"></div>
+                        <div class="tooltip-weight" id="tooltipWeight"></div>
+                    </div>
                 </div>
 
                 <div class="demo-controls">
@@ -1672,8 +1866,14 @@
 
                 <div class="demo-status">
                     <div class="demo-status-text" id="demoStatusText">
-                        Kattints a "Szimuláció Indítása" gombra!
+                        Válassz egy kérdést, majd kattints "Szimuláció Indítása"-ra!
                     </div>
+                </div>
+
+                <div class="speed-control">
+                    <span class="speed-label">Sebesség:</span>
+                    <input type="range" class="speed-slider" id="speedSlider" min="0.5" max="2" step="0.5" value="1">
+                    <span class="speed-label" id="speedValue">1x</span>
                 </div>
 
                 <div class="demo-legend">
@@ -1708,6 +1908,11 @@
                     3. <strong>Weighted Voting:</strong> Súlyozott szavazás alapján ranking készül<br>
                     4. <strong>Result Aggregation:</strong> A top 3 válasz kerül visszaadásra indoklással
                 </p>
+            </div>
+
+            <div class="results-panel" id="resultsPanel">
+                <h3 style="color: white; font-size: 24px; margin-bottom: 24px;">🏆 Top 3 Válasz</h3>
+                <div id="resultsContent"></div>
             </div>
         </div>
     </section>
@@ -2551,19 +2756,111 @@
         let demoStartTime = 0;
 
         const AGENT_NAMES = [
-            { name: 'Stratéga', short: 'STR', color: '#3b82f6' },
-            { name: 'Kreatív', short: 'CRE', color: '#8b5cf6' },
-            { name: 'Praktikus', short: 'PRA', color: '#06b6d4' },
-            { name: 'Filozófus', short: 'PHI', color: '#10b981' },
-            { name: 'Technikus', short: 'TEC', color: '#f59e0b' },
-            { name: 'Szkeptikus', short: 'SKE', color: '#ef4444' },
-            { name: 'Empatikus', short: 'EMP', color: '#ec4899' },
-            { name: 'Kísérleti', short: 'KIS', color: '#6366f1' },
-            { name: 'Történész', short: 'TÖR', color: '#14b8a6' },
-            { name: 'Gyakorlati', short: 'GYO', color: '#f97316' },
-            { name: 'Részlet', short: 'RÉS', color: '#a855f7' },
-            { name: 'Humanista', short: 'HUM', color: '#22c55e' }
+            { name: 'Stratéga', short: 'STR', color: '#3b82f6', bio: 'Hosszú távú tervezés, stratégiai gondolkodás', expertise: ['stratégia', 'üzlet', 'tervezés'] },
+            { name: 'Kreatív', short: 'CRE', color: '#8b5cf6', bio: 'Innovatív ötletek, új perspektívák', expertise: ['innováció', 'kreativitás', 'design'] },
+            { name: 'Praktikus', short: 'PRA', color: '#06b6d4', bio: 'Gyakorlati megoldások, megvalósíthatóság', expertise: ['gyakorlat', 'implementáció', 'realitás'] },
+            { name: 'Filozófus', short: 'PHI', color: '#10b981', bio: 'Etika, értékek, mélyebb jelentés', expertise: ['etika', 'filozófia', 'értékek'] },
+            { name: 'Technikus', short: 'TEC', color: '#f59e0b', bio: 'Technológiai megoldások, mérnöki szemlélet', expertise: ['technológia', 'mérnöki', 'rendszerek'] },
+            { name: 'Szkeptikus', short: 'SKE', color: '#ef4444', bio: 'Kritikus elemzés, kockázatok feltárása', expertise: ['kritika', 'kockázat', 'analízis'] },
+            { name: 'Empatikus', short: 'EMP', color: '#ec4899', bio: 'Emberi tényezők, érzelmi intelligencia', expertise: ['empátia', 'emberi kapcsolatok', 'érzelem'] },
+            { name: 'Kísérleti', short: 'KIS', color: '#6366f1', bio: 'Tudományos megközelítés, adatvezérelt', expertise: ['tudomány', 'adatok', 'kísérlet'] },
+            { name: 'Történész', short: 'TÖR', color: '#14b8a6', bio: 'Történelmi kontextus, múltbeli minták', expertise: ['történelem', 'minták', 'kontextus'] },
+            { name: 'Gyakorlati', short: 'GYO', color: '#f97316', bio: 'Gyors cselekvés, pragmatizmus', expertise: ['gyorsaság', 'pragmatizmus', 'cselekvés'] },
+            { name: 'Részlet', short: 'RÉS', color: '#a855f7', bio: 'Részletes elemzés, precizitás', expertise: ['részletek', 'precizitás', 'alaposság'] },
+            { name: 'Humanista', short: 'HUM', color: '#22c55e', bio: 'Emberi jólét, társadalmi hatás', expertise: ['humanizmus', 'társadalom', 'jólét'] }
         ];
+
+        const DEMO_QUESTIONS = [
+            {
+                question: 'Bitcoin vagy arany befektetés?',
+                weights: { STR: 1.8, CRE: 0.8, PRA: 1.5, PHI: 0.9, TEC: 1.2, SKE: 1.9, EMP: 0.7, KIS: 1.4, TÖR: 1.7, GYO: 1.3, RÉS: 1.6, HUM: 0.8 },
+                answers: [
+                    { agent: 'Szkeptikus', text: 'Mindkettő bizonytalan. Az arany évezredek óta bizonyított, a bitcoin 15 éves. Diverzifikáció a kulcs, de én az aranyat preferálom a történelmi stabilitás miatt.', score: 8.9 },
+                    { agent: 'Történész', text: 'A történelem azt mutatja: válságokban mindig az arany volt a menedék. 2008-ban, 1929-ben, még a háborúk alatt is. A bitcoin még nem élt meg ilyen krízist.', score: 8.5 },
+                    { agent: 'Stratéga', text: 'Portfolio kontextusban: 70% arany (stabilizátor), 20% bitcoin (upside potenciál), 10% készpénz. Az aranypiac 12 trillió USD, bitcoin 800 milliárd – érés kérdése.', score: 8.3 }
+                ]
+            },
+            {
+                question: 'Minek tanuljak programozni?',
+                weights: { STR: 1.5, CRE: 1.3, PRA: 1.8, PHI: 1.2, TEC: 1.9, SKE: 1.1, EMP: 1.0, KIS: 1.4, TÖR: 0.9, GYO: 1.6, RÉS: 1.3, HUM: 1.1 },
+                answers: [
+                    { agent: 'Technikus', text: 'Az AI kódot ír, DE te kell hogy tudd mi a jó kód. Ugyanúgy mint a kalkulátor nem helyettesíti a matematikai gondolkodást. A programozás problémamegoldás – az értékes skill, nem a syntax.', score: 9.1 },
+                    { agent: 'Gyakorlati', text: 'AI copilot vagy, nem autopilot. Junior fejlesztők 40%-kal gyorsabbak AI-val. De senior tudás nélkül nem tudod reviewálni/debugolni/architektálni. Tanulj, de AI-supported módon.', score: 8.7 },
+                    { agent: 'Stratéga', text: 'Future-proof skill kombó: programozás alapok + AI prompt engineering + domain expertise. Az AI leírja a solution-t, te kell hogy értesd a problem-et. Nem vagy felesleges, csak más a szerep.', score: 8.4 }
+                ]
+            },
+            {
+                question: 'Hogyan építsek startupot?',
+                weights: { STR: 1.9, CRE: 1.7, PRA: 1.8, PHI: 0.9, TEC: 1.5, SKE: 1.4, EMP: 1.3, KIS: 1.2, TÖR: 1.0, GYO: 1.9, RÉS: 1.1, HUM: 1.2 },
+                answers: [
+                    { agent: 'Stratéga', text: 'Lean startup mantra 2025: Build–Measure–Learn, de AI-accelerált. MVP 2 hét alatt, tesztelés 500+ usernél hónapok helyett. Pivot gyorsan, de adatokkal. VC csak 3+ hónapos retention után.', score: 9.3 },
+                    { agent: 'Gyakorlati', text: 'Ne építs 6 hónapot product-ra amit senki nem akar. 1 hét: Landing page + Stripe checkout + waitlist. Ha 100 ember bejelentkezik → liftoff. Ha nem → pivot. Execution > idea.', score: 9.0 },
+                    { agent: 'Kreatív', text: 'Találd meg a "hair on fire" problémát. Ne vitaminokat árulj, hanem fájdalomcsillapítót. Niche down: inkább 1000 fanatic user, mint 100k langyos. Network effect + viral loop = hockey stick growth.', score: 8.6 }
+                ]
+            },
+            {
+                question: 'Online vs offline tanulás?',
+                weights: { STR: 1.2, CRE: 1.1, PRA: 1.6, PHI: 1.4, TEC: 1.3, SKE: 1.2, EMP: 1.7, KIS: 1.5, TÖR: 1.3, GYO: 1.4, RÉS: 1.1, HUM: 1.8 },
+                answers: [
+                    { agent: 'Humanista', text: 'Hibrid a válasz. Online: skálázható, elérhető, olcsó. Offline: emberi kapcsolat, azonnali feedback, accountability. A legjobb tanulás: online kurzus + helyi study group + mentor.', score: 8.9 },
+                    { agent: 'Empatikus', text: 'Tanulási stílus kérdése. Visual learnerek jók online-ban, kinesthetic-ek rosszak. Extrovertnek nehéz online-ban motiváltnak maradni. Ismerd magad, aztán válassz. Nincs "one size fits all".', score: 8.6 },
+                    { agent: 'Kísérleti', text: 'MIT kutatás: online completion rate 3–6%, offline 60–80%. DE: online + peer pressure (Discord community, accountability partner) → 45% completion. Társadalmi elem a missing piece.', score: 8.4 }
+                ]
+            }
+        ];
+
+        let currentQuestion = 0;
+        let demoSpeed = 1;
+        let hoveredAgent = null;
+
+        // Speed control
+        const speedSlider = document.getElementById('speedSlider');
+        const speedValue = document.getElementById('speedValue');
+        if (speedSlider) {
+            speedSlider.addEventListener('input', (e) => {
+                demoSpeed = parseFloat(e.target.value);
+                speedValue.textContent = demoSpeed + 'x';
+            });
+        }
+
+        // Question selection
+        function selectQuestion(index) {
+            currentQuestion = index;
+            document.querySelectorAll('.question-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+
+            // Update agent weights based on question
+            const weights = DEMO_QUESTIONS[index].weights;
+            demoAgents.forEach(agent => {
+                agent.weight = weights[agent.short] || 1.0;
+            });
+
+            updateDemoStatus(`Kérdés kiválasztva: "${DEMO_QUESTIONS[index].question}"`);
+            document.getElementById('resultsPanel').classList.remove('visible');
+        }
+
+        // Show results
+        function showResults() {
+            const question = DEMO_QUESTIONS[currentQuestion];
+            const resultsContent = document.getElementById('resultsContent');
+
+            let html = '';
+            question.answers.forEach((answer, i) => {
+                const rankEmoji = ['🥇', '🥈', '🥉'][i];
+                html += `
+                    <div class="result-item">
+                        <div class="result-rank">${rankEmoji} #${i + 1}</div>
+                        <div class="result-agent">${answer.agent}</div>
+                        <div class="result-text">${answer.text}</div>
+                        <div class="result-score">Voting Score: ${answer.score}/10.0</div>
+                    </div>
+                `;
+            });
+
+            resultsContent.innerHTML = html;
+            document.getElementById('resultsPanel').classList.add('visible');
+        }
 
         function resizeDemoCanvas() {
             if (!demoCanvas) return;
@@ -2589,11 +2886,61 @@
                     y: centerY + Math.sin(angle) * radius,
                     status: 'idle', // idle, thinking, responding, voting, complete
                     progress: 0,
-                    pulsePhase: Math.random() * Math.PI * 2
+                    pulsePhase: Math.random() * Math.PI * 2,
+                    weight: 1.0,
+                    chatBubble: null
                 };
             });
 
+            // Mouse hover for tooltips
+            demoCanvas.addEventListener('mousemove', (e) => {
+                const rect = demoCanvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+
+                let foundAgent = null;
+                demoAgents.forEach(agent => {
+                    const dx = mouseX - agent.x;
+                    const dy = mouseY - agent.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 35) {
+                        foundAgent = agent;
+                    }
+                });
+
+                if (foundAgent !== hoveredAgent) {
+                    hoveredAgent = foundAgent;
+                    if (hoveredAgent) {
+                        showTooltip(hoveredAgent, e.clientX, e.clientY);
+                    } else {
+                        hideTooltip();
+                    }
+                }
+            });
+
+            demoCanvas.addEventListener('mouseleave', hideTooltip);
+
             renderDemo();
+        }
+
+        function showTooltip(agent, x, y) {
+            const tooltip = document.getElementById('agentTooltip');
+            const tooltipName = document.getElementById('tooltipName');
+            const tooltipBio = document.getElementById('tooltipBio');
+            const tooltipWeight = document.getElementById('tooltipWeight');
+
+            tooltipName.textContent = agent.name + ' (' + agent.short + ')';
+            tooltipBio.textContent = agent.bio;
+            tooltipWeight.textContent = `Súly ezen a kérdésnél: ${agent.weight.toFixed(1)}x`;
+
+            tooltip.style.left = x + 20 + 'px';
+            tooltip.style.top = y - 60 + 'px';
+            tooltip.classList.add('visible');
+        }
+
+        function hideTooltip() {
+            const tooltip = document.getElementById('agentTooltip');
+            tooltip.classList.remove('visible');
         }
 
         function startDemo() {
@@ -2608,12 +2955,17 @@
             document.getElementById('pauseDemoBtn').disabled = false;
             updateDemoStatus('🧠 Ágensek gondolkodnak...');
 
+            const speed = demoSpeed;
+
             // Phase 1: Thinking (2s)
             setTimeout(() => {
                 if (!demoRunning || demoPaused) return;
-                demoAgents.forEach(agent => agent.status = 'thinking');
+                demoAgents.forEach(agent => {
+                    agent.status = 'thinking';
+                    agent.chatBubble = 'Elemzem...';
+                });
                 updateDemoStatus('💭 Párhuzamos gondolkodás...');
-            }, 500);
+            }, 500 / speed);
 
             // Phase 2: Responding (4s)
             setTimeout(() => {
@@ -2623,25 +2975,32 @@
                     setTimeout(() => {
                         agent.status = 'responding';
                         agent.progress = 0;
-                    }, i * 200);
+                        agent.chatBubble = 'Válaszolok...';
+                    }, (i * 200) / speed);
                 });
                 updateDemoStatus('✍️ Ágensek válaszolnak...');
-            }, 2500);
+            }, 2500 / speed);
 
             // Phase 3: Cross-Evaluation (4s)
             setTimeout(() => {
                 if (!demoRunning || demoPaused) return;
                 demoPhase = 'voting';
+                demoAgents.forEach(agent => {
+                    agent.chatBubble = 'Értékelem...';
+                });
                 updateDemoStatus('🔄 Keresztértékelés folyamatban...');
                 startConnectionAnimation();
-            }, 6500);
+            }, 6500 / speed);
 
             // Phase 4: Voting (2s)
             setTimeout(() => {
                 if (!demoRunning || demoPaused) return;
-                demoAgents.forEach(agent => agent.status = 'voting');
+                demoAgents.forEach(agent => {
+                    agent.status = 'voting';
+                    agent.chatBubble = 'Szavazok...';
+                });
                 updateDemoStatus('🗳️ Szavazás...');
-            }, 10500);
+            }, 10500 / speed);
 
             // Phase 5: Complete (1s)
             setTimeout(() => {
@@ -2650,17 +3009,21 @@
                 demoAgents.forEach(agent => {
                     agent.status = 'complete';
                     agent.progress = 100;
+                    agent.chatBubble = 'Kész! ✓';
                 });
                 demoConnections = [];
                 updateDemoStatus('✅ Szimuláció befejezve! Top 3 válasz aggregálva.');
                 document.getElementById('startDemoBtn').disabled = false;
                 document.getElementById('pauseDemoBtn').disabled = true;
+
+                // Show results after a brief delay
                 setTimeout(() => {
+                    showResults();
                     if (demoRunning) {
                         demoRunning = false;
                     }
-                }, 2000);
-            }, 12500);
+                }, 1000 / speed);
+            }, 12500 / speed);
 
             animateDemo();
         }
@@ -2686,11 +3049,13 @@
             demoAgents.forEach(agent => {
                 agent.status = 'idle';
                 agent.progress = 0;
+                agent.chatBubble = null;
             });
             document.getElementById('startDemoBtn').disabled = false;
             document.getElementById('pauseDemoBtn').disabled = true;
             document.getElementById('pauseDemoBtn').textContent = '⏸️ Szünet';
-            updateDemoStatus('Kattints a "Szimuláció Indítása" gombra!');
+            document.getElementById('resultsPanel').classList.remove('visible');
+            updateDemoStatus('Válassz egy kérdést, majd kattints "Szimuláció Indítása"-ra!');
             renderDemo();
         }
 
@@ -2854,6 +3219,39 @@
                 demoCtx.fillStyle = '#94a3b8';
                 demoCtx.font = '10px Inter';
                 demoCtx.fillText(agent.name, agent.x, agent.y + radius + 15);
+
+                // Chat bubble
+                if (agent.chatBubble && agent.status !== 'idle') {
+                    const bubbleY = agent.y - radius - 40;
+                    demoCtx.font = '11px Inter';
+                    const textWidth = demoCtx.measureText(agent.chatBubble).width;
+                    const bubbleWidth = textWidth + 20;
+                    const bubbleHeight = 26;
+
+                    // Bubble background
+                    demoCtx.fillStyle = 'rgba(30, 41, 59, 0.95)';
+                    demoCtx.strokeStyle = 'rgba(59, 130, 246, 0.4)';
+                    demoCtx.lineWidth = 1;
+                    demoCtx.beginPath();
+                    demoCtx.roundRect(agent.x - bubbleWidth / 2, bubbleY - bubbleHeight / 2, bubbleWidth, bubbleHeight, 8);
+                    demoCtx.fill();
+                    demoCtx.stroke();
+
+                    // Bubble text
+                    demoCtx.fillStyle = '#cbd5e1';
+                    demoCtx.textAlign = 'center';
+                    demoCtx.textBaseline = 'middle';
+                    demoCtx.fillText(agent.chatBubble, agent.x, bubbleY);
+
+                    // Small arrow pointing to agent
+                    demoCtx.fillStyle = 'rgba(30, 41, 59, 0.95)';
+                    demoCtx.beginPath();
+                    demoCtx.moveTo(agent.x - 5, bubbleY + bubbleHeight / 2);
+                    demoCtx.lineTo(agent.x + 5, bubbleY + bubbleHeight / 2);
+                    demoCtx.lineTo(agent.x, bubbleY + bubbleHeight / 2 + 6);
+                    demoCtx.closePath();
+                    demoCtx.fill();
+                }
             });
         }
 
