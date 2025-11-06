@@ -1,0 +1,29 @@
+# FastAPI és ASGI szerver
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+websockets==12.0
+
+# AI Provider SDK-k
+openai==1.3.5
+anthropic==0.7.1
+google-generativeai==0.3.1
+
+# Async HTTP
+httpx==0.25.1
+aiohttp==3.9.1
+
+# Környezeti változók
+python-dotenv==1.0.0
+
+# Validáció
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# CORS
+python-multipart==0.0.6
+
+# Logging
+structlog==23.2.0
+
+# Rate limiting (opcionális)
+slowapi==0.1.9
