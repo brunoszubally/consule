@@ -41,8 +41,8 @@ class KreativAgent(BaseAgent):
             bio="Innovatív ötletek, új perspektívák",
             expertise=["innováció", "kreativitás", "design"],
             speed_multiplier=1.2,
-            provider="anthropic",
-            model="claude-3-opus"
+            provider="openai",
+            model="gpt-4"
         )
 
     def get_system_prompt(self) -> str:
@@ -93,8 +93,8 @@ class FilozofusAgent(BaseAgent):
             bio="Etika, értékek, mélyebb jelentés",
             expertise=["etika", "filozófia", "értékek"],
             speed_multiplier=0.7,
-            provider="anthropic",
-            model="claude-3-sonnet"
+            provider="openai",
+            model="gpt-4"
         )
 
     def get_system_prompt(self) -> str:
@@ -171,8 +171,8 @@ class EmpatikusAgent(BaseAgent):
             bio="Emberi tényezők, érzelmi intelligencia",
             expertise=["empátia", "emberi kapcsolatok", "érzelem"],
             speed_multiplier=1.1,
-            provider="anthropic",
-            model="claude-3-sonnet"
+            provider="openai",
+            model="gpt-4"
         )
 
     def get_system_prompt(self) -> str:
@@ -223,8 +223,8 @@ class TortenelemAgent(BaseAgent):
             bio="Történelmi minták, tanulságok a múltból",
             expertise=["történelem", "minták", "kontextus"],
             speed_multiplier=0.9,
-            provider="anthropic",
-            model="claude-3-opus"
+            provider="openai",
+            model="gpt-4"
         )
 
     def get_system_prompt(self) -> str:
@@ -301,8 +301,8 @@ class HumoristAgent(BaseAgent):
             bio="Könnyedebb perspektíva, humoros megközelítés",
             expertise=["humor", "perspektíva", "kreativitás"],
             speed_multiplier=1.1,
-            provider="anthropic",
-            model="claude-3-sonnet"
+            provider="openai",
+            model="gpt-4"
         )
 
     def get_system_prompt(self) -> str:
