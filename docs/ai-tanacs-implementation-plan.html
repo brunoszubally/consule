@@ -1683,6 +1683,76 @@
             cursor: pointer;
             border: none;
         }
+
+        /* Mode Toggle */
+        .mode-toggle {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding: 16px;
+            border-radius: 12px;
+            background: rgba(139, 92, 246, 0.05);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .toggle-checkbox {
+            display: none;
+        }
+
+        .toggle-slider {
+            position: relative;
+            width: 48px;
+            height: 24px;
+            background: var(--gray-700);
+            border-radius: 24px;
+            transition: background 0.3s;
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+
+        .toggle-checkbox:checked + .toggle-slider {
+            background: var(--primary);
+        }
+
+        .toggle-checkbox:checked + .toggle-slider::before {
+            transform: translateX(24px);
+        }
+
+        .toggle-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-300);
+        }
+
+        .mode-status {
+            font-size: 12px;
+            color: var(--gray-500);
+            font-style: italic;
+        }
+
+        .mode-toggle.active .mode-status {
+            color: var(--primary);
+        }
     </style>
 </head>
 <body>
@@ -1874,6 +1944,15 @@
                     <span class="speed-label">Sebesség:</span>
                     <input type="range" class="speed-slider" id="speedSlider" min="0.5" max="2" step="0.5" value="1">
                     <span class="speed-label" id="speedValue">1x</span>
+                </div>
+
+                <div class="mode-toggle">
+                    <label class="toggle-label">
+                        <input type="checkbox" id="realAIToggle" class="toggle-checkbox">
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-text">🤖 Valódi AI Backend</span>
+                    </label>
+                    <div class="mode-status" id="modeStatus">Szimuláció mód</div>
                 </div>
 
                 <div class="demo-legend">
@@ -2815,6 +2894,199 @@
         let centerBrain = { x: 0, y: 0, pulsePhase: 0, active: false };
         let convergenceThreads = [];
 
+        // Real AI Mode
+        let realAIMode = false;
+        let ws = null;
+        const WS_URL = 'ws://localhost:8000/ws/ask';
+
+        // Mode toggle handler
+        const realAIToggle = document.getElementById('realAIToggle');
+        const modeStatus = document.getElementById('modeStatus');
+        const modeToggleDiv = document.querySelector('.mode-toggle');
+
+        if (realAIToggle) {
+            realAIToggle.addEventListener('change', (e) => {
+                realAIMode = e.target.checked;
+
+                if (realAIMode) {
+                    modeStatus.textContent = '🤖 Valódi AI mód (Backend: localhost:8000)';
+                    modeToggleDiv.classList.add('active');
+                    document.getElementById('startDemoBtn').textContent = '🚀 AI Indítása';
+                } else {
+                    modeStatus.textContent = 'Szimuláció mód';
+                    modeToggleDiv.classList.remove('active');
+                    document.getElementById('startDemoBtn').textContent = '🚀 Szimuláció Indítása';
+
+                    // Close WebSocket if open
+                    if (ws) {
+                        ws.close();
+                        ws = null;
+                    }
+                }
+            });
+        }
+
+        // WebSocket Real AI Mode
+        function startRealAI() {
+            if (demoRunning) return;
+
+            demoRunning = true;
+            demoPaused = false;
+            demoPhase = 'thinking';
+
+            document.getElementById('startDemoBtn').disabled = true;
+            document.getElementById('pauseDemoBtn').disabled = true; // Pause not supported in real mode
+            updateDemoStatus('🔌 Kapcsolódás a backend-hez...');
+
+            // Reset agents
+            demoAgents.forEach(agent => {
+                agent.status = 'idle';
+                agent.progress = 0;
+                agent.chatBubble = null;
+                agent.completed = false;
+            });
+
+            const question = DEMO_QUESTIONS[currentQuestion];
+            const weights = question.weights;
+
+            try {
+                ws = new WebSocket(WS_URL);
+
+                ws.onopen = () => {
+                    updateDemoStatus('✅ Kapcsolódva! Kérdés elküldve...');
+
+                    // Send question to backend
+                    ws.send(JSON.stringify({
+                        question: question.question,
+                        weights: weights,
+                        voting_method: 'borda'
+                    }));
+
+                    animateDemo();
+                };
+
+                ws.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+
+                    if (data.type === 'status') {
+                        // Phase update
+                        demoPhase = data.phase;
+                        updateDemoStatus(data.message);
+
+                        if (data.phase === 'thinking') {
+                            demoAgents.forEach(agent => {
+                                agent.status = 'thinking';
+                                agent.chatBubble = 'Elemzem...';
+                            });
+                        } else if (data.phase === 'responding') {
+                            demoAgents.forEach(agent => {
+                                agent.status = 'responding';
+                            });
+                        } else if (data.phase === 'voting') {
+                            centerBrain.active = true;
+                            startConnectionAnimation();
+                            demoAgents.forEach(agent => {
+                                agent.status = 'voting';
+                                agent.chatBubble = 'Szavazok...';
+                            });
+                        }
+                    } else if (data.type === 'agent_update') {
+                        // Individual agent update
+                        const agent = demoAgents.find(a => a.name === data.agent);
+                        if (agent) {
+                            agent.status = data.status;
+                            agent.progress = data.progress || 0;
+
+                            if (data.status === 'thinking') {
+                                agent.chatBubble = 'Gondolkodom...';
+                            } else if (data.status === 'complete') {
+                                agent.completed = true;
+                                agent.chatBubble = 'Kész! ✓';
+                                agent.response = data.response;
+
+                                // Create convergence thread
+                                if (centerBrain.active) {
+                                    convergenceThreads.push({
+                                        fromX: agent.x,
+                                        fromY: agent.y,
+                                        progress: 0,
+                                        color: agent.color + '80',
+                                        life: 1
+                                    });
+                                }
+                            }
+                        }
+                    } else if (data.type === 'result') {
+                        // Final result
+                        demoPhase = 'complete';
+                        demoConnections = [];
+                        centerBrain.active = false;
+
+                        demoAgents.forEach(agent => {
+                            agent.status = 'complete';
+                            agent.progress = 100;
+                            agent.chatBubble = 'Befejezve!';
+                        });
+
+                        updateDemoStatus(`✅ Valódi AI válasz kész! (${data.total_time_seconds.toFixed(1)}s)`);
+
+                        // Show real results
+                        showRealResults(data);
+
+                        setTimeout(() => {
+                            demoRunning = false;
+                            document.getElementById('startDemoBtn').disabled = false;
+                        }, 1000);
+                    } else if (data.type === 'error') {
+                        updateDemoStatus(`❌ Hiba: ${data.message}`);
+                        demoRunning = false;
+                        document.getElementById('startDemoBtn').disabled = false;
+                    }
+                };
+
+                ws.onerror = (error) => {
+                    console.error('WebSocket error:', error);
+                    updateDemoStatus('❌ Backend kapcsolat hiba! Ellenőrizd hogy fut-e a backend (localhost:8000)');
+                    demoRunning = false;
+                    document.getElementById('startDemoBtn').disabled = false;
+                };
+
+                ws.onclose = () => {
+                    if (demoRunning) {
+                        updateDemoStatus('⚠️ Kapcsolat lezárult');
+                        demoRunning = false;
+                        document.getElementById('startDemoBtn').disabled = false;
+                    }
+                };
+
+            } catch (error) {
+                console.error('WebSocket connection error:', error);
+                updateDemoStatus('❌ Nem sikerült kapcsolódni a backend-hez!');
+                demoRunning = false;
+                document.getElementById('startDemoBtn').disabled = false;
+            }
+        }
+
+        // Show real AI results
+        function showRealResults(data) {
+            const resultsContent = document.getElementById('resultsContent');
+            if (!resultsContent) return;
+
+            // Take top 3 responses
+            const top3 = data.all_responses.slice(0, 3);
+
+            resultsContent.innerHTML = top3.map((resp, i) => `
+                <div class="result-item">
+                    <div class="result-rank">#${i + 1}</div>
+                    <div class="result-agent" style="color: ${resp.color}">${resp.agent}</div>
+                    <div class="result-text">${resp.text}</div>
+                    <div class="result-score">Pontszám: ${resp.score.toFixed(1)}/10</div>
+                </div>
+            `).join('');
+
+            document.getElementById('resultsPanel').classList.add('visible');
+        }
+
         // Speed control
         const speedSlider = document.getElementById('speedSlider');
         const speedValue = document.getElementById('speedValue');
@@ -2952,6 +3224,12 @@
 
         function startDemo() {
             if (demoRunning) return;
+
+            // Check if Real AI mode is enabled
+            if (realAIMode) {
+                startRealAI();
+                return;
+            }
 
             demoRunning = true;
             demoPaused = false;
