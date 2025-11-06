@@ -2812,10 +2812,8 @@
         let currentQuestion = 0;
         let demoSpeed = 1;
         let hoveredAgent = null;
-        let centerBrain = { x: 0, y: 0, pulsePhase: 0, active: false, energy: 0 };
+        let centerBrain = { x: 0, y: 0, pulsePhase: 0, active: false };
         let convergenceThreads = [];
-        let scoringParticles = [];
-        let conflicts = [];
 
         // Speed control
         const speedSlider = document.getElementById('speedSlider');
@@ -3052,10 +3050,7 @@
             demoPhase = 'idle';
             demoConnections = [];
             convergenceThreads = [];
-            scoringParticles = [];
-            conflicts = [];
             centerBrain.active = false;
-            centerBrain.energy = 0;
             centerBrain.pulsePhase = 0;
 
             if (demoAnimationId) {
@@ -3094,24 +3089,12 @@
                 const from = Math.floor(Math.random() * demoAgents.length);
                 const to = Math.floor(Math.random() * demoAgents.length);
                 if (from !== to) {
-                    // 20% chance of conflict (disagreement)
-                    if (Math.random() < 0.2) {
-                        conflicts.push({
-                            fromX: demoAgents[from].x,
-                            fromY: demoAgents[from].y,
-                            toX: demoAgents[to].x,
-                            toY: demoAgents[to].y,
-                            life: 1,
-                            scale: 0.5
-                        });
-                    } else {
-                        demoConnections.push({
-                            from,
-                            to,
-                            progress: 0,
-                            life: 1
-                        });
-                    }
+                    demoConnections.push({
+                        from,
+                        to,
+                        progress: 0,
+                        life: 1
+                    });
                 }
 
                 // Limit connections
@@ -3140,7 +3123,6 @@
                         });
                         // Activate center brain
                         centerBrain.active = true;
-                        centerBrain.energy = Math.min(centerBrain.energy + 0.15, 1);
                     }
                 }
                 agent.pulsePhase += 0.05;
@@ -3149,35 +3131,12 @@
             // Update center brain
             if (centerBrain.active) {
                 centerBrain.pulsePhase += 0.1;
-                centerBrain.energy *= 0.995; // Fade energy slowly
             }
 
-            // Update convergence threads
+            // Update convergence threads (simple fade out)
             convergenceThreads = convergenceThreads.filter(thread => {
                 thread.progress += 0.08;
-                if (thread.progress >= 1) {
-                    // Create particles at center when thread arrives
-                    for (let i = 0; i < 5; i++) {
-                        scoringParticles.push({
-                            x: centerBrain.x,
-                            y: centerBrain.y,
-                            vx: (Math.random() - 0.5) * 3,
-                            vy: (Math.random() - 0.5) * 3,
-                            life: 1,
-                            color: thread.color
-                        });
-                    }
-                }
                 return thread.progress < 1;
-            });
-
-            // Update scoring particles
-            scoringParticles = scoringParticles.filter(p => {
-                p.x += p.vx;
-                p.y += p.vy;
-                p.vy += 0.1; // Gravity
-                p.life -= 0.02;
-                return p.life > 0;
             });
 
             // Update connections
@@ -3185,13 +3144,6 @@
                 conn.progress += 0.05;
                 conn.life -= 0.01;
                 return conn.life > 0;
-            });
-
-            // Update conflicts
-            conflicts = conflicts.filter(c => {
-                c.life -= 0.05;
-                c.scale += 0.1;
-                return c.life > 0;
             });
 
             renderDemo();
@@ -3207,112 +3159,45 @@
             // Clear
             demoCtx.clearRect(0, 0, w, h);
 
-            // Draw central brain
+            // Draw central brain (simplified)
             if (centerBrain.active) {
-                const brainRadius = 40 + Math.sin(centerBrain.pulsePhase) * 8;
-                const energyGlow = centerBrain.energy * 30;
+                const brainRadius = 35 + Math.sin(centerBrain.pulsePhase) * 5;
 
-                // Outer energy glow
+                // Simple glow
                 const gradient = demoCtx.createRadialGradient(
                     centerBrain.x, centerBrain.y, 0,
-                    centerBrain.x, centerBrain.y, brainRadius + energyGlow
+                    centerBrain.x, centerBrain.y, brainRadius + 20
                 );
-                gradient.addColorStop(0, `rgba(139, 92, 246, ${centerBrain.energy * 0.6})`);
-                gradient.addColorStop(0.5, `rgba(59, 130, 246, ${centerBrain.energy * 0.3})`);
-                gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
+                gradient.addColorStop(0, 'rgba(139, 92, 246, 0.4)');
+                gradient.addColorStop(1, 'rgba(139, 92, 246, 0)');
                 demoCtx.fillStyle = gradient;
                 demoCtx.beginPath();
-                demoCtx.arc(centerBrain.x, centerBrain.y, brainRadius + energyGlow, 0, Math.PI * 2);
+                demoCtx.arc(centerBrain.x, centerBrain.y, brainRadius + 20, 0, Math.PI * 2);
                 demoCtx.fill();
 
-                // Main brain sphere
-                const brainGradient = demoCtx.createRadialGradient(
-                    centerBrain.x - 10, centerBrain.y - 10, 0,
-                    centerBrain.x, centerBrain.y, brainRadius
-                );
-                brainGradient.addColorStop(0, '#a78bfa');
-                brainGradient.addColorStop(1, '#6366f1');
-                demoCtx.fillStyle = brainGradient;
+                // Main brain circle
+                demoCtx.fillStyle = 'rgba(139, 92, 246, 0.3)';
                 demoCtx.strokeStyle = '#8b5cf6';
-                demoCtx.lineWidth = 3;
+                demoCtx.lineWidth = 2;
                 demoCtx.beginPath();
                 demoCtx.arc(centerBrain.x, centerBrain.y, brainRadius, 0, Math.PI * 2);
                 demoCtx.fill();
                 demoCtx.stroke();
-
-                // Neural network pattern
-                for (let i = 0; i < 8; i++) {
-                    const angle = (i / 8) * Math.PI * 2 + centerBrain.pulsePhase * 0.5;
-                    const x1 = centerBrain.x + Math.cos(angle) * (brainRadius * 0.4);
-                    const y1 = centerBrain.y + Math.sin(angle) * (brainRadius * 0.4);
-                    const x2 = centerBrain.x + Math.cos(angle) * (brainRadius * 0.8);
-                    const y2 = centerBrain.y + Math.sin(angle) * (brainRadius * 0.8);
-
-                    demoCtx.strokeStyle = `rgba(255, 255, 255, ${centerBrain.energy * 0.4})`;
-                    demoCtx.lineWidth = 2;
-                    demoCtx.beginPath();
-                    demoCtx.moveTo(x1, y1);
-                    demoCtx.lineTo(x2, y2);
-                    demoCtx.stroke();
-                }
-
-                // Center core
-                demoCtx.fillStyle = `rgba(255, 255, 255, ${centerBrain.energy * 0.8})`;
-                demoCtx.beginPath();
-                demoCtx.arc(centerBrain.x, centerBrain.y, brainRadius * 0.3, 0, Math.PI * 2);
-                demoCtx.fill();
             }
 
-            // Draw convergence threads (agents → center)
+            // Draw convergence threads (simplified)
             convergenceThreads.forEach(thread => {
                 const currentX = thread.fromX + (centerBrain.x - thread.fromX) * thread.progress;
                 const currentY = thread.fromY + (centerBrain.y - thread.fromY) * thread.progress;
 
-                // Glowing thread
                 demoCtx.strokeStyle = thread.color;
-                demoCtx.lineWidth = 3;
-                demoCtx.shadowBlur = 15;
-                demoCtx.shadowColor = thread.color;
+                demoCtx.lineWidth = 2;
+                demoCtx.globalAlpha = 1 - thread.progress;
                 demoCtx.beginPath();
                 demoCtx.moveTo(thread.fromX, thread.fromY);
                 demoCtx.lineTo(currentX, currentY);
                 demoCtx.stroke();
-                demoCtx.shadowBlur = 0;
-
-                // Traveling particle
-                demoCtx.fillStyle = thread.color;
-                demoCtx.beginPath();
-                demoCtx.arc(currentX, currentY, 6, 0, Math.PI * 2);
-                demoCtx.fill();
-            });
-
-            // Draw scoring particles
-            scoringParticles.forEach(p => {
-                demoCtx.fillStyle = p.color;
-                demoCtx.globalAlpha = p.life;
-                demoCtx.beginPath();
-                demoCtx.arc(p.x, p.y, 4, 0, Math.PI * 2);
-                demoCtx.fill();
                 demoCtx.globalAlpha = 1;
-            });
-
-            // Draw conflict flashes
-            conflicts.forEach(c => {
-                demoCtx.strokeStyle = `rgba(239, 68, 68, ${c.life})`;
-                demoCtx.lineWidth = 4;
-                demoCtx.setLineDash([5, 5]);
-                demoCtx.beginPath();
-                demoCtx.moveTo(c.fromX, c.fromY);
-                demoCtx.lineTo(c.toX, c.toY);
-                demoCtx.stroke();
-                demoCtx.setLineDash([]);
-
-                // Flash circle
-                demoCtx.strokeStyle = `rgba(239, 68, 68, ${c.life * 0.5})`;
-                demoCtx.lineWidth = 2;
-                demoCtx.beginPath();
-                demoCtx.arc((c.fromX + c.toX) / 2, (c.fromY + c.toY) / 2, c.scale * 20, 0, Math.PI * 2);
-                demoCtx.stroke();
             });
 
             // Draw connections
@@ -3371,28 +3256,16 @@
                     radius += 8; // Bigger radius for winners
                 }
 
-                // Winner celebration ring
+                // Winner ring (subtle)
                 if (isWinner) {
-                    const ringRadius = radius + 20 + Math.sin(agent.pulsePhase * 2) * 5;
+                    const ringRadius = radius + 15 + Math.sin(agent.pulsePhase * 2) * 3;
                     demoCtx.strokeStyle = '#fbbf24';
-                    demoCtx.lineWidth = 4;
-                    demoCtx.shadowBlur = 20;
-                    demoCtx.shadowColor = '#fbbf24';
+                    demoCtx.lineWidth = 3;
+                    demoCtx.globalAlpha = 0.6;
                     demoCtx.beginPath();
                     demoCtx.arc(agent.x, agent.y, ringRadius, 0, Math.PI * 2);
                     demoCtx.stroke();
-                    demoCtx.shadowBlur = 0;
-
-                    // Winner particles
-                    for (let i = 0; i < 3; i++) {
-                        const particleAngle = agent.pulsePhase * 2 + (i / 3) * Math.PI * 2;
-                        const px = agent.x + Math.cos(particleAngle) * (ringRadius - 5);
-                        const py = agent.y + Math.sin(particleAngle) * (ringRadius - 5);
-                        demoCtx.fillStyle = '#fbbf24';
-                        demoCtx.beginPath();
-                        demoCtx.arc(px, py, 4, 0, Math.PI * 2);
-                        demoCtx.fill();
-                    }
+                    demoCtx.globalAlpha = 1;
                 }
 
                 // Outer glow
