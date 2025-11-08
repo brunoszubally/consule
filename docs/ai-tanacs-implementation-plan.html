@@ -1551,6 +1551,73 @@
             box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
         }
 
+        /* Custom Question Input */
+        .custom-question-wrapper {
+            margin-bottom: 32px;
+            padding: 24px;
+            background: rgba(139, 92, 246, 0.08);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 16px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .custom-question-input-group {
+            display: flex;
+            gap: 12px;
+            align-items: stretch;
+        }
+
+        .custom-question-input {
+            flex: 1;
+            padding: 16px 20px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 12px;
+            color: var(--gray-100);
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .custom-question-input::placeholder {
+            color: var(--gray-500);
+        }
+
+        .custom-question-input:focus {
+            border-color: var(--primary);
+            background: rgba(30, 41, 59, 1);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+        }
+
+        .use-custom-btn {
+            padding: 16px 32px;
+            background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .use-custom-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        .use-custom-btn:active {
+            transform: translateY(0);
+        }
+
+        .custom-question-hint {
+            margin-top: 12px;
+            font-size: 13px;
+            color: var(--gray-400);
+            font-style: italic;
+        }
+
         .question-icon {
             font-size: 20px;
             margin-bottom: 8px;
@@ -1911,6 +1978,26 @@
                         <strong>Online vs offline tanulás?</strong><br>
                         Mi a hatékonyabb módszer?
                     </button>
+                </div>
+
+                <!-- Custom Question Input (Real AI Mode) -->
+                <div class="custom-question-wrapper" id="customQuestionWrapper" style="display: none;">
+                    <h3 style="color: white; margin-bottom: 16px; font-size: 18px;">💡 Vagy írd be a saját kérdésedet:</h3>
+                    <div class="custom-question-input-group">
+                        <input
+                            type="text"
+                            id="customQuestionInput"
+                            class="custom-question-input"
+                            placeholder="Pl. Mi a jövője a mesterséges intelligenciának?"
+                            maxlength="200"
+                        />
+                        <button class="use-custom-btn" onclick="useCustomQuestion()">
+                            ✨ Használd ezt
+                        </button>
+                    </div>
+                    <div class="custom-question-hint">
+                        💡 Tipp: A valódi AI bármilyen kérdésre válaszol! Használd ki!
+                    </div>
                 </div>
 
                 <div class="demo-canvas-wrapper">
@@ -2898,6 +2985,7 @@
         let realAIMode = false;
         let ws = null;
         const WS_URL = 'ws://localhost:8000/ws/ask';
+        let customQuestion = null;  // Stores user's custom question
 
         // Mode toggle handler
         const realAIToggle = document.getElementById('realAIToggle');
@@ -2908,14 +2996,26 @@
             realAIToggle.addEventListener('change', (e) => {
                 realAIMode = e.target.checked;
 
+                const customQuestionWrapper = document.getElementById('customQuestionWrapper');
+
                 if (realAIMode) {
                     modeStatus.textContent = '🤖 Valódi AI mód (Backend: localhost:8000)';
                     modeToggleDiv.classList.add('active');
                     document.getElementById('startDemoBtn').textContent = '🚀 AI Indítása';
+
+                    // Show custom question input
+                    if (customQuestionWrapper) {
+                        customQuestionWrapper.style.display = 'block';
+                    }
                 } else {
                     modeStatus.textContent = 'Szimuláció mód';
                     modeToggleDiv.classList.remove('active');
                     document.getElementById('startDemoBtn').textContent = '🚀 Szimuláció Indítása';
+
+                    // Hide custom question input
+                    if (customQuestionWrapper) {
+                        customQuestionWrapper.style.display = 'none';
+                    }
 
                     // Close WebSocket if open
                     if (ws) {
@@ -2929,6 +3029,12 @@
         // WebSocket Real AI Mode
         function startRealAI() {
             if (demoRunning) return;
+
+            // Check if a question is selected or custom question is provided
+            if (!customQuestion && currentQuestion === undefined) {
+                alert('⚠️ Kérlek válassz egy kérdést vagy írj be egy saját kérdést!');
+                return;
+            }
 
             demoRunning = true;
             demoPaused = false;
@@ -2946,8 +3052,25 @@
                 agent.completed = false;
             });
 
-            const question = DEMO_QUESTIONS[currentQuestion];
-            const weights = question.weights;
+            // Determine which question to use
+            let questionText;
+            let weights;
+
+            if (customQuestion) {
+                // Use custom question
+                questionText = customQuestion;
+                // Default weights for custom questions (all agents equal)
+                weights = {
+                    STR: 1.0, CRE: 1.0, PRA: 1.0, PHI: 1.0,
+                    TEC: 1.0, SKE: 1.0, EMP: 1.0, KIS: 1.0,
+                    TÖR: 1.0, GYO: 1.0, RÉS: 1.0, HUM: 1.0
+                };
+            } else {
+                // Use demo question
+                const question = DEMO_QUESTIONS[currentQuestion];
+                questionText = question.question;
+                weights = question.weights;
+            }
 
             try {
                 ws = new WebSocket(WS_URL);
@@ -2957,7 +3080,7 @@
 
                     // Send question to backend
                     ws.send(JSON.stringify({
-                        question: question.question,
+                        question: questionText,
                         weights: weights,
                         voting_method: 'borda'
                     }));
@@ -3112,7 +3235,60 @@
 
             updateDemoStatus(`Kérdés kiválasztva: "${DEMO_QUESTIONS[index].question}"`);
             document.getElementById('resultsPanel').classList.remove('visible');
+
+            // Clear custom question when selecting a demo question
+            customQuestion = null;
+            const customInput = document.getElementById('customQuestionInput');
+            if (customInput) customInput.value = '';
         }
+
+        // Use custom question
+        function useCustomQuestion() {
+            const input = document.getElementById('customQuestionInput');
+            const question = input.value.trim();
+
+            if (!question) {
+                alert('⚠️ Kérlek írj be egy kérdést!');
+                input.focus();
+                return;
+            }
+
+            if (question.length < 10) {
+                alert('⚠️ A kérdés túl rövid! Legalább 10 karakter kell.');
+                input.focus();
+                return;
+            }
+
+            // Store custom question
+            customQuestion = question;
+
+            // Deselect all demo questions
+            document.querySelectorAll('.question-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Update status
+            updateDemoStatus(`✨ Saját kérdés: "${question}"`);
+            document.getElementById('resultsPanel').classList.remove('visible');
+
+            // Visual feedback
+            input.style.borderColor = '#10b981';
+            setTimeout(() => {
+                input.style.borderColor = '';
+            }, 1000);
+        }
+
+        // Enter key handler for custom question input
+        window.addEventListener('DOMContentLoaded', () => {
+            const customInput = document.getElementById('customQuestionInput');
+            if (customInput) {
+                customInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        useCustomQuestion();
+                    }
+                });
+            }
+        });
 
         // Show results
         function showResults() {
