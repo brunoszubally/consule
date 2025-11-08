@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     reload: bool = True
 
     # CORS
-    cors_origins: Union[list[str], str] = ["http://localhost:3000", "http://localhost:8000", "*"]
+    cors_origins: Union[list[str], str] = ["http://localhost:3000", "http://localhost:8001", "*"]
 
     # Agent Configuration
     max_tokens: int = 500

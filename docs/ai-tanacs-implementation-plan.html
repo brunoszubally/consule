@@ -1958,22 +1958,22 @@
             <div class="demo-container fade-in">
                 <h3 style="color: white; margin-bottom: 24px; font-size: 18px;">Válassz egy kérdést:</h3>
                 <div class="demo-questions">
-                    <button class="question-btn" onclick="selectQuestion(0)">
+                    <button class="question-btn" data-question="0">
                         <span class="question-icon">💰</span>
                         <strong>Bitcoin vagy arany?</strong><br>
                         Melyik a jobb hosszú távú befektetés?
                     </button>
-                    <button class="question-btn" onclick="selectQuestion(1)">
+                    <button class="question-btn" data-question="1">
                         <span class="question-icon">💻</span>
                         <strong>Minek tanuljak programozni?</strong><br>
                         Ha az AI mindent megír helyettem?
                     </button>
-                    <button class="question-btn" onclick="selectQuestion(2)">
+                    <button class="question-btn" data-question="2">
                         <span class="question-icon">🚀</span>
                         <strong>Hogyan építsek startupot?</strong><br>
                         Sikeres vállalkozás 2025-ben
                     </button>
-                    <button class="question-btn" onclick="selectQuestion(3)">
+                    <button class="question-btn" data-question="3">
                         <span class="question-icon">🎓</span>
                         <strong>Online vs offline tanulás?</strong><br>
                         Mi a hatékonyabb módszer?
@@ -1991,7 +1991,7 @@
                             placeholder="Pl. Mi a jövője a mesterséges intelligenciának?"
                             maxlength="200"
                         />
-                        <button class="use-custom-btn" onclick="useCustomQuestion()">
+                        <button class="use-custom-btn">
                             ✨ Használd ezt
                         </button>
                     </div>
@@ -2010,13 +2010,13 @@
                 </div>
 
                 <div class="demo-controls">
-                    <button class="demo-btn" id="startDemoBtn" onclick="startDemo()">
+                    <button class="demo-btn" id="startDemoBtn">
                         🚀 Szimuláció Indítása
                     </button>
-                    <button class="demo-btn secondary" id="pauseDemoBtn" onclick="pauseDemo()" disabled>
+                    <button class="demo-btn secondary" id="pauseDemoBtn" disabled>
                         ⏸️ Szünet
                     </button>
-                    <button class="demo-btn secondary" id="resetDemoBtn" onclick="resetDemo()">
+                    <button class="demo-btn secondary" id="resetDemoBtn">
                         🔄 Újra
                     </button>
                 </div>
@@ -2984,7 +2984,7 @@
         // Real AI Mode
         let realAIMode = false;
         let ws = null;
-        const WS_URL = 'ws://localhost:8000/ws/ask';
+        const WS_URL = 'ws://localhost:8001/ws/ask';
         let customQuestion = null;  // Stores user's custom question
 
         // Mode toggle handler
@@ -2999,7 +2999,7 @@
                 const customQuestionWrapper = document.getElementById('customQuestionWrapper');
 
                 if (realAIMode) {
-                    modeStatus.textContent = '🤖 Valódi AI mód (Backend: localhost:8000)';
+                    modeStatus.textContent = '🤖 Valódi AI mód (Backend: localhost:8001)';
                     modeToggleDiv.classList.add('active');
                     document.getElementById('startDemoBtn').textContent = '🚀 AI Indítása';
 
@@ -3169,7 +3169,7 @@
 
                 ws.onerror = (error) => {
                     console.error('WebSocket error:', error);
-                    updateDemoStatus('❌ Backend kapcsolat hiba! Ellenőrizd hogy fut-e a backend (localhost:8000)');
+                    updateDemoStatus('❌ Backend kapcsolat hiba! Ellenőrizd hogy fut-e a backend (localhost:8001)');
                     demoRunning = false;
                     document.getElementById('startDemoBtn').disabled = false;
                 };
@@ -3278,14 +3278,64 @@
             }, 1000);
         }
 
-        // Enter key handler for custom question input
+        // Initialize all event listeners after DOM loads
         window.addEventListener('DOMContentLoaded', () => {
+            // Custom question input - Enter key handler
             const customInput = document.getElementById('customQuestionInput');
             if (customInput) {
                 customInput.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter') {
                         useCustomQuestion();
                     }
+                });
+            }
+
+            // "Használd ezt" button
+            const useCustomBtn = document.querySelector('.use-custom-btn');
+            if (useCustomBtn) {
+                useCustomBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    useCustomQuestion();
+                });
+            }
+
+            // Question selection buttons
+            const questionBtns = document.querySelectorAll('.question-btn');
+            questionBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const questionIndex = parseInt(btn.getAttribute('data-question'));
+                    selectQuestion(questionIndex);
+                });
+            });
+
+            // Demo control buttons
+            const startBtn = document.getElementById('startDemoBtn');
+            if (startBtn) {
+                startBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    startDemo();
+                });
+            }
+
+            const pauseBtn = document.getElementById('pauseDemoBtn');
+            if (pauseBtn) {
+                pauseBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    pauseDemo();
+                });
+            }
+
+            const resetBtn = document.getElementById('resetDemoBtn');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    resetDemo();
                 });
             }
         });
