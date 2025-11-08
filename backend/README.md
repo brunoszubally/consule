@@ -114,18 +114,18 @@ ws.onmessage = (event) => {
 
 | Agent | Short | Speed | Provider | Specialty |
 |-------|-------|-------|----------|-----------|
-| Stratéga | STR | 0.9x | OpenAI GPT-4 | Long-term strategy |
-| Kreatív | CRE | 1.2x | Anthropic Claude | Innovation |
-| Praktikus | PRA | 1.3x | OpenAI GPT-3.5 | Practical solutions |
-| Filozófus | PHI | 0.7x | Anthropic Claude | Ethics & values |
-| Technikus | TEC | 1.4x | OpenAI GPT-4 | Technical expertise |
-| Szkeptikus | SKE | 0.8x | OpenAI GPT-4 | Critical analysis |
-| Empatikus | EMP | 1.1x | Anthropic Claude | Human factors |
-| Kísérleti | KIS | 1.0x | OpenAI GPT-4 | Data-driven science |
-| Történelem | TÖR | 0.9x | Anthropic Claude | Historical patterns |
-| Gyakorlati | GYO | 1.5x | OpenAI GPT-3.5 | Fast execution |
-| Részletes | RÉS | 0.8x | OpenAI GPT-4 | Attention to detail |
-| Humorista | HUM | 1.1x | Anthropic Claude | Lighter perspective |
+| Stratéga | STR | 0.9x | OpenAI GPT-4o-mini | Long-term strategy |
+| Kreatív | CRE | 1.2x | OpenAI GPT-4o-mini | Innovation |
+| Praktikus | PRA | 1.3x | OpenAI GPT-4o-mini | Practical solutions |
+| Filozófus | PHI | 0.7x | OpenAI GPT-4o-mini | Ethics & values |
+| Technikus | TEC | 1.4x | OpenAI GPT-4o-mini | Technical expertise |
+| Szkeptikus | SKE | 0.8x | OpenAI GPT-4o-mini | Critical analysis |
+| Empatikus | EMP | 1.1x | OpenAI GPT-4o-mini | Human factors |
+| Kísérleti | KIS | 1.0x | OpenAI GPT-4o-mini | Data-driven science |
+| Történelem | TÖR | 0.9x | OpenAI GPT-4o-mini | Historical patterns |
+| Gyakorlati | GYO | 1.5x | OpenAI GPT-4o-mini | Fast execution |
+| Részletes | RÉS | 0.8x | OpenAI GPT-4o-mini | Attention to detail |
+| Humorista | HUM | 1.1x | OpenAI GPT-4o-mini | Lighter perspective |
 
 ## 🗳️ Voting Methods
 

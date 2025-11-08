@@ -16,7 +16,7 @@ class StrategaAgent(BaseAgent):
             expertise=["stratégia", "üzlet", "tervezés"],
             speed_multiplier=0.9,
             provider="openai",
-            model="gpt-4"
+            model="gpt-4o-mini"
         )
 
     def get_system_prompt(self) -> str:
@@ -42,7 +42,7 @@ class KreativAgent(BaseAgent):
             expertise=["innováció", "kreativitás", "design"],
             speed_multiplier=1.2,
             provider="openai",
-            model="gpt-4"
+            model="gpt-4o-mini"
         )
 
     def get_system_prompt(self) -> str:
@@ -68,7 +68,7 @@ class PraktikusAgent(BaseAgent):
             expertise=["gyakorlat", "implementáció", "realitás"],
             speed_multiplier=1.3,
             provider="openai",
-            model="gpt-3.5-turbo"
+            model="gpt-4o-mini"
         )
 
     def get_system_prompt(self) -> str:
@@ -94,7 +94,7 @@ class FilozofusAgent(BaseAgent):
             expertise=["etika", "filozófia", "értékek"],
             speed_multiplier=0.7,
             provider="openai",
-            model="gpt-4"
+            model="gpt-4o-mini"
         )
 
     def get_system_prompt(self) -> str:
@@ -120,7 +120,7 @@ class TechnikusAgent(BaseAgent):
             expertise=["technológia", "mérnöki", "rendszerek"],
             speed_multiplier=1.4,
             provider="openai",
-            model="gpt-4"
+            model="gpt-4o-mini"
         )
 
     def get_system_prompt(self) -> str:
@@ -146,7 +146,7 @@ class SzkeptikusAgent(BaseAgent):
             expertise=["kritika", "kockázat", "analízis"],
             speed_multiplier=0.8,
             provider="openai",
-            model="gpt-4"
+            model="gpt-4o-mini"
         )
 
     def get_system_prompt(self) -> str:
@@ -172,7 +172,7 @@ class EmpatikusAgent(BaseAgent):
             expertise=["empátia", "emberi kapcsolatok", "érzelem"],
             speed_multiplier=1.1,
             provider="openai",
-            model="gpt-4"
+            model="gpt-4o-mini"
         )
 
     def get_system_prompt(self) -> str:
@@ -198,7 +198,7 @@ class KiserletiAgent(BaseAgent):
             expertise=["tudomány", "adatok", "kísérlet"],
             speed_multiplier=1.0,
             provider="openai",
-            model="gpt-4"
+            model="gpt-4o-mini"
         )
 
     def get_system_prompt(self) -> str:
@@ -224,7 +224,7 @@ class TortenelemAgent(BaseAgent):
             expertise=["történelem", "minták", "kontextus"],
             speed_multiplier=0.9,
             provider="openai",
-            model="gpt-4"
+            model="gpt-4o-mini"
         )
 
     def get_system_prompt(self) -> str:
@@ -250,7 +250,7 @@ class GyakorlatiAgent(BaseAgent):
             expertise=["végrehajtás", "action", "gyorsaság"],
             speed_multiplier=1.5,
             provider="openai",
-            model="gpt-3.5-turbo"
+            model="gpt-4o-mini"
         )
 
     def get_system_prompt(self) -> str:
@@ -276,7 +276,7 @@ class ReszletesAgent(BaseAgent):
             expertise=["alaposság", "részletek", "precizitás"],
             speed_multiplier=0.8,
             provider="openai",
-            model="gpt-4"
+            model="gpt-4o-mini"
         )
 
     def get_system_prompt(self) -> str:
@@ -302,7 +302,7 @@ class HumoristAgent(BaseAgent):
             expertise=["humor", "perspektíva", "kreativitás"],
             speed_multiplier=1.1,
             provider="openai",
-            model="gpt-4"
+            model="gpt-4o-mini"
         )
 
     def get_system_prompt(self) -> str:

@@ -14,18 +14,18 @@ Felhasználó Kérdése
   ┌─────────────────────────────────────┐
   │  12 Ágens Párhuzamosan Dolgozik     │
   ├─────────────────────────────────────┤
-  │  1. Stratéga    → GPT-4            │
-  │  2. Kreatív     → GPT-4            │
-  │  3. Praktikus   → GPT-3.5-turbo    │
-  │  4. Filozófus   → GPT-4            │
-  │  5. Technikus   → GPT-4            │
-  │  6. Szkeptikus  → GPT-4            │
-  │  7. Empatikus   → GPT-4            │
-  │  8. Kísérleti   → GPT-4            │
-  │  9. Történész   → GPT-4            │
-  │  10. Gyakorlati → GPT-3.5-turbo    │
-  │  11. Részletes  → GPT-4            │
-  │  12. Humorista  → GPT-4            │
+  │  1. Stratéga    → GPT-4o-mini      │
+  │  2. Kreatív     → GPT-4o-mini      │
+  │  3. Praktikus   → GPT-4o-mini      │
+  │  4. Filozófus   → GPT-4o-mini      │
+  │  5. Technikus   → GPT-4o-mini      │
+  │  6. Szkeptikus  → GPT-4o-mini      │
+  │  7. Empatikus   → GPT-4o-mini      │
+  │  8. Kísérleti   → GPT-4o-mini      │
+  │  9. Történész   → GPT-4o-mini      │
+  │  10. Gyakorlati → GPT-4o-mini      │
+  │  11. Részletes  → GPT-4o-mini      │
+  │  12. Humorista  → GPT-4o-mini      │
   └─────────────────────────────────────┘
         ↓
    [Szavazás]
@@ -54,7 +54,7 @@ class BaseAgent(ABC):
         expertise: list[str],   # Szakértői területek
         speed_multiplier: float, # Sebesség (0.7 - 1.5x)
         provider: str,          # "openai"
-        model: str              # "gpt-4" vagy "gpt-3.5-turbo"
+        model: str              # "gpt-4o-mini"
     ):
 ```
 
@@ -349,7 +349,7 @@ curl -X POST http://localhost:8000/api/ask \
 **1 Kérdés → 12 Ágens → 12 Válasz → Szavazás → 1 Legjobb Válasz**
 
 - Minden ágens **egyedi személyiség** (system prompt)
-- Minden ágens **OpenAI GPT-4 vagy GPT-3.5**
+- Minden ágens **OpenAI GPT-4o-mini**
 - **Párhuzamos** végrehajtás (async)
 - **Változó sebességek** (0.7x - 1.5x)
 - **Súlyozott szavazás** (kérdésenként más súlyok)
