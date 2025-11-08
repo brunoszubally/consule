@@ -61,6 +61,7 @@ class CouncilResponse(BaseModel):
     winner_score: float
     all_responses: List[AgentResponse]
     voting_scores: Dict[str, float]
+    voting_details: Dict  # New: detailed voting calculations
     voting_method: str
     total_time_seconds: float
     timestamp: str
@@ -141,7 +142,7 @@ async def ask_council(request: QuestionRequest):
 
     # Apply voting
     voting_fn = get_voting_system(request.voting_method or "borda")
-    winner_text, voting_scores = voting_fn(responses_sorted, request.weights)
+    winner_text, voting_scores, voting_details = voting_fn(responses_sorted, request.weights)
 
     # Get winner score
     winner_score = max(voting_scores.values()) if voting_scores else 0.0
@@ -155,6 +156,7 @@ async def ask_council(request: QuestionRequest):
         winner_score=winner_score,
         all_responses=responses_sorted,
         voting_scores=voting_scores,
+        voting_details=voting_details,
         voting_method=request.voting_method or "borda",
         total_time_seconds=total_time,
         timestamp=datetime.now().isoformat()
@@ -242,7 +244,7 @@ async def websocket_ask(websocket: WebSocket):
         # Sort and vote
         responses_sorted = sorted(responses, key=lambda x: x["score"], reverse=True)
         voting_fn = get_voting_system(voting_method)
-        winner_text, voting_scores = voting_fn(responses_sorted, weights)
+        winner_text, voting_scores, voting_details = voting_fn(responses_sorted, weights)
         winner_score = max(voting_scores.values()) if voting_scores else 0.0
 
         await asyncio.sleep(0.5)
@@ -259,6 +261,7 @@ async def websocket_ask(websocket: WebSocket):
             "winner_score": winner_score,
             "all_responses": responses_sorted,
             "voting_scores": voting_scores,
+            "voting_details": voting_details,  # Include detailed calculations
             "voting_method": voting_method,
             "total_time_seconds": total_time,
             "timestamp": datetime.now().isoformat()

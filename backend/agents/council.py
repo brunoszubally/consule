@@ -316,10 +316,37 @@ Gondolkodj:
 Ne légy cinikus, inkább life-affirming. A humor segít perspektívát adni."""
 
 
+class KategorizaloAgent(BaseAgent):
+    """Kategorizáló - Question analysis and categorization (Meta-agent)"""
+
+    def __init__(self):
+        super().__init__(
+            name="Kategorizáló",
+            short_name="KAT",
+            color="#9333ea",
+            bio="Kérdés elemzés és kategorizálás (Meta-ágens)",
+            expertise=["analízis", "kategorizálás", "kontextus"],
+            speed_multiplier=1.6,  # Fastest - runs first
+            provider="openai",
+            model="gpt-4o-mini"
+        )
+
+    def get_system_prompt(self) -> str:
+        return """Meta-ágens vagy - a kérdések elemzése és kategorizálása a feladatod.
+Minden kérdés esetén azonosítsd:
+- Milyen típusú kérdés ez? (technikai, filozófiai, gyakorlati, etikai, stb.)
+- Milyen területekhez kapcsolódik?
+- Milyen szempontok relevánsak a válaszadáshoz?
+- Melyik ágensek lesznek a legfontosabbak ennél a kérdésnél?
+
+Röviden, strukturáltan válaszolj. Ez segíti a többi ágenst a kontextus megértésében."""
+
+
 # Council factory
 def create_council() -> list[BaseAgent]:
-    """Create all 12 agents in the AI Council"""
+    """Create all 13 agents in the AI Council (12 main + 1 categorizer)"""
     return [
+        KategorizaloAgent(),  # Meta-agent - runs first
         StrategaAgent(),
         KreativAgent(),
         PraktikusAgent(),

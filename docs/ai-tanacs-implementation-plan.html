@@ -1519,38 +1519,6 @@
             color: var(--gray-400);
         }
 
-        .demo-questions {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 12px;
-            margin-bottom: 32px;
-        }
-
-        .question-btn {
-            padding: 16px;
-            background: rgba(30, 41, 59, 0.6);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 12px;
-            color: var(--gray-300);
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: left;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .question-btn:hover {
-            border-color: var(--primary);
-            background: rgba(59, 130, 246, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .question-btn.active {
-            border-color: var(--primary);
-            background: rgba(59, 130, 246, 0.15);
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-        }
-
         /* Custom Question Input */
         .custom-question-wrapper {
             margin-bottom: 32px;
@@ -1956,33 +1924,9 @@
             </div>
 
             <div class="demo-container fade-in">
-                <h3 style="color: white; margin-bottom: 24px; font-size: 18px;">Válassz egy kérdést:</h3>
-                <div class="demo-questions">
-                    <button class="question-btn" data-question="0">
-                        <span class="question-icon">💰</span>
-                        <strong>Bitcoin vagy arany?</strong><br>
-                        Melyik a jobb hosszú távú befektetés?
-                    </button>
-                    <button class="question-btn" data-question="1">
-                        <span class="question-icon">💻</span>
-                        <strong>Minek tanuljak programozni?</strong><br>
-                        Ha az AI mindent megír helyettem?
-                    </button>
-                    <button class="question-btn" data-question="2">
-                        <span class="question-icon">🚀</span>
-                        <strong>Hogyan építsek startupot?</strong><br>
-                        Sikeres vállalkozás 2025-ben
-                    </button>
-                    <button class="question-btn" data-question="3">
-                        <span class="question-icon">🎓</span>
-                        <strong>Online vs offline tanulás?</strong><br>
-                        Mi a hatékonyabb módszer?
-                    </button>
-                </div>
-
-                <!-- Custom Question Input (Real AI Mode) -->
-                <div class="custom-question-wrapper" id="customQuestionWrapper" style="display: none;">
-                    <h3 style="color: white; margin-bottom: 16px; font-size: 18px;">💡 Vagy írd be a saját kérdésedet:</h3>
+                <!-- Custom Question Input - Always Visible -->
+                <div class="custom-question-wrapper" id="customQuestionWrapper">
+                    <h3 style="color: white; margin-bottom: 16px; font-size: 18px;">💡 Írd be a kérdésedet:</h3>
                     <div class="custom-question-input-group">
                         <input
                             type="text"
@@ -1992,11 +1936,11 @@
                             maxlength="200"
                         />
                         <button class="use-custom-btn">
-                            ✨ Használd ezt
+                            ✨ Kérdezd meg az AI-t
                         </button>
                     </div>
                     <div class="custom-question-hint">
-                        💡 Tipp: A valódi AI bármilyen kérdésre válaszol! Használd ki!
+                        💡 Tipp: A 13 AI ágens bármilyen kérdésre válaszol! Használd ki!
                     </div>
                 </div>
 
@@ -2922,6 +2866,7 @@
         let demoStartTime = 0;
 
         const AGENT_NAMES = [
+            { name: 'Kategorizáló', short: 'KAT', color: '#9333ea', bio: 'Kérdés elemzés és kategorizálás (Meta-ágens)', expertise: ['analízis', 'kategorizálás', 'kontextus'], speedMult: 1.6 },
             { name: 'Stratéga', short: 'STR', color: '#3b82f6', bio: 'Hosszú távú tervezés, stratégiai gondolkodás', expertise: ['stratégia', 'üzlet', 'tervezés'], speedMult: 0.9 },
             { name: 'Kreatív', short: 'CRE', color: '#8b5cf6', bio: 'Innovatív ötletek, új perspektívák', expertise: ['innováció', 'kreativitás', 'design'], speedMult: 1.2 },
             { name: 'Praktikus', short: 'PRA', color: '#06b6d4', bio: 'Gyakorlati megoldások, megvalósíthatóság', expertise: ['gyakorlat', 'implementáció', 'realitás'], speedMult: 1.3 },
@@ -2936,46 +2881,7 @@
             { name: 'Humanista', short: 'HUM', color: '#22c55e', bio: 'Emberi jólét, társadalmi hatás', expertise: ['humanizmus', 'társadalom', 'jólét'], speedMult: 0.95 }
         ];
 
-        const DEMO_QUESTIONS = [
-            {
-                question: 'Bitcoin vagy arany befektetés?',
-                weights: { STR: 1.8, CRE: 0.8, PRA: 1.5, PHI: 0.9, TEC: 1.2, SKE: 1.9, EMP: 0.7, KIS: 1.4, TÖR: 1.7, GYO: 1.3, RÉS: 1.6, HUM: 0.8 },
-                answers: [
-                    { agent: 'Szkeptikus', text: 'Mindkettő bizonytalan. Az arany évezredek óta bizonyított, a bitcoin 15 éves. Diverzifikáció a kulcs, de én az aranyat preferálom a történelmi stabilitás miatt.', score: 8.9 },
-                    { agent: 'Történész', text: 'A történelem azt mutatja: válságokban mindig az arany volt a menedék. 2008-ban, 1929-ben, még a háborúk alatt is. A bitcoin még nem élt meg ilyen krízist.', score: 8.5 },
-                    { agent: 'Stratéga', text: 'Portfolio kontextusban: 70% arany (stabilizátor), 20% bitcoin (upside potenciál), 10% készpénz. Az aranypiac 12 trillió USD, bitcoin 800 milliárd – érés kérdése.', score: 8.3 }
-                ]
-            },
-            {
-                question: 'Minek tanuljak programozni?',
-                weights: { STR: 1.5, CRE: 1.3, PRA: 1.8, PHI: 1.2, TEC: 1.9, SKE: 1.1, EMP: 1.0, KIS: 1.4, TÖR: 0.9, GYO: 1.6, RÉS: 1.3, HUM: 1.1 },
-                answers: [
-                    { agent: 'Technikus', text: 'Az AI kódot ír, DE te kell hogy tudd mi a jó kód. Ugyanúgy mint a kalkulátor nem helyettesíti a matematikai gondolkodást. A programozás problémamegoldás – az értékes skill, nem a syntax.', score: 9.1 },
-                    { agent: 'Gyakorlati', text: 'AI copilot vagy, nem autopilot. Junior fejlesztők 40%-kal gyorsabbak AI-val. De senior tudás nélkül nem tudod reviewálni/debugolni/architektálni. Tanulj, de AI-supported módon.', score: 8.7 },
-                    { agent: 'Stratéga', text: 'Future-proof skill kombó: programozás alapok + AI prompt engineering + domain expertise. Az AI leírja a solution-t, te kell hogy értesd a problem-et. Nem vagy felesleges, csak más a szerep.', score: 8.4 }
-                ]
-            },
-            {
-                question: 'Hogyan építsek startupot?',
-                weights: { STR: 1.9, CRE: 1.7, PRA: 1.8, PHI: 0.9, TEC: 1.5, SKE: 1.4, EMP: 1.3, KIS: 1.2, TÖR: 1.0, GYO: 1.9, RÉS: 1.1, HUM: 1.2 },
-                answers: [
-                    { agent: 'Stratéga', text: 'Lean startup mantra 2025: Build–Measure–Learn, de AI-accelerált. MVP 2 hét alatt, tesztelés 500+ usernél hónapok helyett. Pivot gyorsan, de adatokkal. VC csak 3+ hónapos retention után.', score: 9.3 },
-                    { agent: 'Gyakorlati', text: 'Ne építs 6 hónapot product-ra amit senki nem akar. 1 hét: Landing page + Stripe checkout + waitlist. Ha 100 ember bejelentkezik → liftoff. Ha nem → pivot. Execution > idea.', score: 9.0 },
-                    { agent: 'Kreatív', text: 'Találd meg a "hair on fire" problémát. Ne vitaminokat árulj, hanem fájdalomcsillapítót. Niche down: inkább 1000 fanatic user, mint 100k langyos. Network effect + viral loop = hockey stick growth.', score: 8.6 }
-                ]
-            },
-            {
-                question: 'Online vs offline tanulás?',
-                weights: { STR: 1.2, CRE: 1.1, PRA: 1.6, PHI: 1.4, TEC: 1.3, SKE: 1.2, EMP: 1.7, KIS: 1.5, TÖR: 1.3, GYO: 1.4, RÉS: 1.1, HUM: 1.8 },
-                answers: [
-                    { agent: 'Humanista', text: 'Hibrid a válasz. Online: skálázható, elérhető, olcsó. Offline: emberi kapcsolat, azonnali feedback, accountability. A legjobb tanulás: online kurzus + helyi study group + mentor.', score: 8.9 },
-                    { agent: 'Empatikus', text: 'Tanulási stílus kérdése. Visual learnerek jók online-ban, kinesthetic-ek rosszak. Extrovertnek nehéz online-ban motiváltnak maradni. Ismerd magad, aztán válassz. Nincs "one size fits all".', score: 8.6 },
-                    { agent: 'Kísérleti', text: 'MIT kutatás: online completion rate 3–6%, offline 60–80%. DE: online + peer pressure (Discord community, accountability partner) → 45% completion. Társadalmi elem a missing piece.', score: 8.4 }
-                ]
-            }
-        ];
-
-        let currentQuestion = 0;
+        // Removed DEMO_QUESTIONS - using only custom questions now
         let demoSpeed = 1;
         let hoveredAgent = null;
         let centerBrain = { x: 0, y: 0, pulsePhase: 0, active: false };
@@ -2996,26 +2902,14 @@
             realAIToggle.addEventListener('change', (e) => {
                 realAIMode = e.target.checked;
 
-                const customQuestionWrapper = document.getElementById('customQuestionWrapper');
-
                 if (realAIMode) {
                     modeStatus.textContent = '🤖 Valódi AI mód (Backend: localhost:8001)';
                     modeToggleDiv.classList.add('active');
                     document.getElementById('startDemoBtn').textContent = '🚀 AI Indítása';
-
-                    // Show custom question input
-                    if (customQuestionWrapper) {
-                        customQuestionWrapper.style.display = 'block';
-                    }
                 } else {
-                    modeStatus.textContent = 'Szimuláció mód';
+                    modeStatus.textContent = 'Szimuláció mód (Mock válaszok)';
                     modeToggleDiv.classList.remove('active');
                     document.getElementById('startDemoBtn').textContent = '🚀 Szimuláció Indítása';
-
-                    // Hide custom question input
-                    if (customQuestionWrapper) {
-                        customQuestionWrapper.style.display = 'none';
-                    }
 
                     // Close WebSocket if open
                     if (ws) {
@@ -3030,9 +2924,9 @@
         function startRealAI() {
             if (demoRunning) return;
 
-            // Check if a question is selected or custom question is provided
-            if (!customQuestion && currentQuestion === undefined) {
-                alert('⚠️ Kérlek válassz egy kérdést vagy írj be egy saját kérdést!');
+            // Check if custom question is provided
+            if (!customQuestion) {
+                alert('⚠️ Kérlek írj be egy kérdést!');
                 return;
             }
 
@@ -3052,25 +2946,14 @@
                 agent.completed = false;
             });
 
-            // Determine which question to use
-            let questionText;
-            let weights;
-
-            if (customQuestion) {
-                // Use custom question
-                questionText = customQuestion;
-                // Default weights for custom questions (all agents equal)
-                weights = {
-                    STR: 1.0, CRE: 1.0, PRA: 1.0, PHI: 1.0,
-                    TEC: 1.0, SKE: 1.0, EMP: 1.0, KIS: 1.0,
-                    TÖR: 1.0, GYO: 1.0, RÉS: 1.0, HUM: 1.0
-                };
-            } else {
-                // Use demo question
-                const question = DEMO_QUESTIONS[currentQuestion];
-                questionText = question.question;
-                weights = question.weights;
-            }
+            // Use custom question
+            let questionText = customQuestion;
+            // Default weights for all agents equal (including the new categorizer)
+            let weights = {
+                KAT: 1.0, STR: 1.0, CRE: 1.0, PRA: 1.0, PHI: 1.0,
+                TEC: 1.0, SKE: 1.0, EMP: 1.0, KIS: 1.0,
+                TÖR: 1.0, GYO: 1.0, RÉS: 1.0, HUM: 1.0
+            };
 
             try {
                 ws = new WebSocket(WS_URL);
@@ -3198,16 +3081,108 @@
             // Take top 3 responses
             const top3 = data.all_responses.slice(0, 3);
 
-            resultsContent.innerHTML = top3.map((resp, i) => `
-                <div class="result-item">
-                    <div class="result-rank">#${i + 1}</div>
-                    <div class="result-agent" style="color: ${resp.color}">${resp.agent}</div>
-                    <div class="result-text">${resp.text}</div>
-                    <div class="result-score">Pontszám: ${resp.score.toFixed(1)}/10</div>
+            let html = `
+                <!-- Top 3 Answers -->
+                <div style="margin-bottom: 32px;">
+                    <h4 style="color: var(--primary); font-size: 18px; margin-bottom: 16px;">🏆 Top 3 Válasz</h4>
+                    ${top3.map((resp, i) => `
+                        <div class="result-item">
+                            <div class="result-rank">#${i + 1}</div>
+                            <div class="result-agent" style="color: ${resp.color}">${resp.agent}</div>
+                            <div class="result-text">${resp.text}</div>
+                            <div class="result-score">Pontszám: ${resp.score.toFixed(1)}/10 | Magabiztosság: ${resp.confidence.toFixed(1)}/10</div>
+                        </div>
+                    `).join('')}
                 </div>
-            `).join('');
 
+                <!-- Voting Details -->
+                ${data.voting_details ? renderVotingDetails(data.voting_details, data.voting_method) : ''}
+            `;
+
+            resultsContent.innerHTML = html;
             document.getElementById('resultsPanel').classList.add('visible');
+        }
+
+        // Render voting calculation details
+        function renderVotingDetails(details, method) {
+            if (!details) return '';
+
+            let html = `
+                <div style="margin-top: 32px; padding: 24px; background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px;">
+                    <h4 style="color: var(--primary); font-size: 18px; margin-bottom: 16px;">📊 Szavazási Részletek</h4>
+                    <div style="color: var(--gray-300); margin-bottom: 12px;"><strong>Módszer:</strong> ${details.method || method}</div>
+            `;
+
+            // Borda Count details
+            if (details.calculations && Array.isArray(details.calculations)) {
+                html += `
+                    <div style="margin-top: 16px;">
+                        <h5 style="color: var(--accent); font-size: 16px; margin-bottom: 12px;">🔢 Borda Count Számítások</h5>
+                        <div style="max-height: 300px; overflow-y: auto; font-size: 13px; font-family: 'JetBrains Mono', monospace;">
+                            ${details.calculations.map(calc => `
+                                <div style="padding: 8px; margin-bottom: 4px; background: rgba(0,0,0,0.2); border-radius: 6px; border-left: 3px solid var(--primary);">
+                                    <span style="color: var(--accent); font-weight: 600;">${calc.agent}</span> -
+                                    Pozíció: ${calc.position},
+                                    Pont: ${calc.base_score.toFixed(1)},
+                                    Súly: ${calc.weight.toFixed(1)} →
+                                    <span style="color: var(--success);">${calc.borda_points.toFixed(2)} pont</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // IRV details
+            if (details.eliminations && Array.isArray(details.eliminations)) {
+                html += `
+                    <div style="margin-top: 16px;">
+                        <h5 style="color: var(--accent); font-size: 16px; margin-bottom: 12px;">🗳️ IRV Eliminációs Körök</h5>
+                        <div style="font-size: 13px;">
+                            ${details.eliminations.map(elim => `
+                                <div style="padding: 8px; margin-bottom: 4px; background: rgba(239, 68, 68, 0.1); border-radius: 6px;">
+                                    Kör ${elim.round}: <span style="color: var(--danger);">"${elim.eliminated}"</span> kiesett (${elim.votes.toFixed(2)} szavazat)
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // MRR details
+            if (method === 'mrr' && details.calculations) {
+                html += `
+                    <div style="margin-top: 16px;">
+                        <h5 style="color: var(--accent); font-size: 16px; margin-bottom: 12px;">📈 Mean Reciprocal Rank</h5>
+                        <div style="max-height: 300px; overflow-y: auto; font-size: 13px; font-family: 'JetBrains Mono', monospace;">
+                            ${details.calculations.map(calc => `
+                                <div style="padding: 8px; margin-bottom: 4px; background: rgba(0,0,0,0.2); border-radius: 6px;">
+                                    <span style="color: var(--accent);">${calc.agent}</span> -
+                                    Rank: ${calc.rank},
+                                    Score: ${calc.mrr_score.toFixed(3)}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Hybrid details
+            if (details.component_winners) {
+                html += `
+                    <div style="margin-top: 16px;">
+                        <h5 style="color: var(--accent); font-size: 16px; margin-bottom: 12px;">🎯 Hybrid Komponensek</h5>
+                        <div style="font-size: 14px;">
+                            <div style="margin-bottom: 8px;"><strong>Borda győztes:</strong> <span style="color: var(--primary);">"${details.component_winners.borda}"</span></div>
+                            <div style="margin-bottom: 8px;"><strong>MRR győztes:</strong> <span style="color: var(--primary);">"${details.component_winners.mrr}"</span></div>
+                            <div style="margin-bottom: 8px;"><strong>IRV győztes:</strong> <span style="color: var(--primary);">"${details.component_winners.irv}"</span></div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += `</div>`;
+            return html;
         }
 
         // Speed control
@@ -3220,27 +3195,7 @@
             });
         }
 
-        // Question selection
-        function selectQuestion(index) {
-            currentQuestion = index;
-            document.querySelectorAll('.question-btn').forEach((btn, i) => {
-                btn.classList.toggle('active', i === index);
-            });
-
-            // Update agent weights based on question
-            const weights = DEMO_QUESTIONS[index].weights;
-            demoAgents.forEach(agent => {
-                agent.weight = weights[agent.short] || 1.0;
-            });
-
-            updateDemoStatus(`Kérdés kiválasztva: "${DEMO_QUESTIONS[index].question}"`);
-            document.getElementById('resultsPanel').classList.remove('visible');
-
-            // Clear custom question when selecting a demo question
-            customQuestion = null;
-            const customInput = document.getElementById('customQuestionInput');
-            if (customInput) customInput.value = '';
-        }
+        // Removed selectQuestion function - using only custom questions now
 
         // Use custom question
         function useCustomQuestion() {
@@ -3262,13 +3217,8 @@
             // Store custom question
             customQuestion = question;
 
-            // Deselect all demo questions
-            document.querySelectorAll('.question-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-
             // Update status
-            updateDemoStatus(`✨ Saját kérdés: "${question}"`);
+            updateDemoStatus(`✨ Kérdés: "${question}"`);
             document.getElementById('resultsPanel').classList.remove('visible');
 
             // Visual feedback
@@ -3299,17 +3249,6 @@
                     useCustomQuestion();
                 });
             }
-
-            // Question selection buttons
-            const questionBtns = document.querySelectorAll('.question-btn');
-            questionBtns.forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const questionIndex = parseInt(btn.getAttribute('data-question'));
-                    selectQuestion(questionIndex);
-                });
-            });
 
             // Demo control buttons
             const startBtn = document.getElementById('startDemoBtn');

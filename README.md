@@ -4,15 +4,16 @@
 
 ## 📋 Projekt Áttekintés
 
-Az **AI Tanács** egy többágenses AI rendszer, amely 12 különböző perspektívájú AI modellt kombinál súlyozott szavazási mechanizmussal a legmegbízhatóbb döntéshozatal érdekében.
+Az **AI Tanács** egy többágenses AI rendszer, amely 13 különböző perspektívájú AI modellt kombinál súlyozott szavazási mechanizmussal a legmegbízhatóbb döntéshozatal érdekében.
 
 ### Főbb Jellemzők
 
-- 🎯 **12 AI Ágens** különböző személyiségekkel és szakértői területekkel
+- 🎯 **13 AI Ágens** (12 szakértő + 1 kategorizáló meta-ágens)
 - ⚡ **~14s válaszidő** párhuzamos feldolgozással
-- 🗳️ **Súlyozott szavazás** (Borda Count, IRV, MRR kombinációja)
+- 🗳️ **Súlyozott szavazás** részletes számításokkal (Borda Count, IRV, MRR kombinációja)
 - 📊 **6 alternatív architektúra** különböző használati esetekre
 - 🏗️ **3 fázisú implementációs terv** MVP-től enterprise-ig
+- 🔍 **Részletes voting analytics** - lásd valós időben a szavazási számításokat
 
 ## 📚 Dokumentáció
 
@@ -177,13 +178,15 @@ consule/
 
 ✅ **Implementálva:**
 - Interaktív HTML dokumentáció
-- Live Demo vizualizáció (szimuláció + valódi AI)
+- Live Demo vizualizáció (csak valódi AI - mock kérdések eltávolítva)
 - FastAPI backend (REST + WebSocket)
-- 12 AI ágens egyedi személyiségekkel
+- **13 AI ágens** egyedi személyiségekkel (12 szakértő + 1 Kategorizáló meta-ágens)
 - OpenAI & Anthropic integráció
 - 4 szavazási mechanizmus (Borda, IRV, MRR, Hybrid)
+- **Részletes voting analytics** - Borda Count számítások, IRV eliminációk, MRR rankingek
 - Real-time WebSocket kommunikáció
 - Párhuzamos agent végrehajtás
+- Custom kérdés input mindig látható
 
 🔜 **Következő Lépések:**
 1. Production deployment (Docker + Kubernetes)
