@@ -2,7 +2,8 @@
 AI Tanács - Configuration
 """
 from pydantic_settings import BaseSettings
-from typing import Optional
+from typing import Optional, Union
+from pydantic import field_validator
 
 
 class Settings(BaseSettings):
@@ -19,7 +20,7 @@ class Settings(BaseSettings):
     reload: bool = True
 
     # CORS
-    cors_origins: list[str] = ["http://localhost:3000", "http://localhost:8000", "*"]
+    cors_origins: Union[list[str], str] = ["http://localhost:3000", "http://localhost:8000", "*"]
 
     # Agent Configuration
     max_tokens: int = 500
@@ -28,6 +29,13 @@ class Settings(BaseSettings):
 
     # Voting Configuration
     voting_method: str = "borda"  # borda, irv, mrr, hybrid
+
+    @field_validator('cors_origins', mode='before')
+    @classmethod
+    def parse_cors_origins(cls, v):
+        if isinstance(v, str):
+            return [origin.strip() for origin in v.split(',')]
+        return v
 
     class Config:
         env_file = ".env"
